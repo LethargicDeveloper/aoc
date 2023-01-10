@@ -21,7 +21,9 @@ public partial class PuzzleSolver
                 _[1].ParseMoves()
             ));
 
-        moves.ForEach(m => stacks[m[2] - 1].PushRange(stacks[m[1] - 1].PopRange(m[0])));
+        moves.ForEach(m => stacks[m[2] - 1].PushRange(
+            stacks[m[1] - 1].PopRange(m[0])
+        ));
 
         return stacks.Select(_ => _.Pop()).CreateString();
     }
