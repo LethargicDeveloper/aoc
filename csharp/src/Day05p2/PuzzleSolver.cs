@@ -21,14 +21,15 @@ public partial class PuzzleSolver
                 _[1].ParseMoves()
             ));
 
-        return moves.Aggregate(stacks, (acc, cur) =>
-        {
-            acc[cur[2] - 1].PushRange(
-                acc[cur[1] - 1].PopRange(cur[0]).Reverse());
-            return acc;
-        })
-        .Select(_ => _.Pop())
-        .CreateString();
+        return moves
+            .Aggregate(stacks, (acc, cur) =>
+            {
+                acc[cur[2] - 1].PushRange(
+                    acc[cur[1] - 1].PopRange(cur[0]).Reverse());
+                return acc;
+            })
+            .Select(_ => _.Pop())
+            .CreateString();
     }
 }
 
