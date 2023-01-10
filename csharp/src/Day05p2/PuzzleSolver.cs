@@ -38,9 +38,9 @@ static partial class Extensions
         .SplitLines()
         .Reverse()
         .Skip(1)
-        .SelectMany(_ => _.Select((v, i) => (i, v)).Where(_ => (_.i - 1) % 4 == 0))
-        .GroupBy(_ => _.i)
-        .Select(_ => new Stack<char>().PushRange(_.Select(c => c.v).Where(_ => _ != ' ')))
+        .SelectMany(_ => _.WithIndex().Where(_ => (_.Index - 1) % 4 == 0))
+        .GroupBy(_ => _.Index)
+        .Select(_ => new Stack<char>().PushRange(_.Select(c => c.Value).Where(_ => _ != ' ')))
         .ToList();
 
     public static List<List<int>> ParseMoves(this string input) => input
