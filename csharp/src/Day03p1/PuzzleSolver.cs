@@ -13,12 +13,12 @@ public class PuzzleSolver
     [Benchmark]
     public long Solve() => input
         .SplitLines()
-        .Select(_ => new[] { _[0] - '@', _[2] - 'W' })
-        .Select(_ => _[1] switch
+        .Select(_ => new[]
         {
-            1 => --_[0] < 1 ? 3 : _[0],
-            3 => 6 + (++_[0] > 3 ? 1 : _[0]),
-            _ => 3 + _[0]
+            _[..(_.Length / 2)],
+            _[^(_.Length / 2)..]
         })
+        .Select(_ => _[0].First(v => _[1].Contains(v)))
+        .Select(_ => char.IsLower(_) ? _ - 96 : _ - 38)
         .Sum();
 }

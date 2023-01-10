@@ -13,14 +13,14 @@ public class PuzzleSolver
     [Benchmark]
     public long Solve() => input
         .SplitLines()
-        .Select(_ => (p1: _[0] - '@', p2: _[2] - 'W'))
+        .Select(_ => new[] { _[0] - '@', _[2] - 'W' })
         .Select(_ => _ switch
         {
-            (1, 2) => 8,
-            (2, 3) => 9,
-            (3, 1) => 7,
-            _ when _.p2 == _.p1 => 3 + _.p2,
-            _ => _.p2
+            [1, 2] => 8,
+            [2, 3] => 9,
+            [3, 1] => 7,
+            _ when _[1] == _[0]  => 3 + _[1],
+            _ => _[1]
         })
         .Sum();
 }
