@@ -11,13 +11,12 @@ public class PuzzleSolver
     }
 
     [Benchmark]
-    public long Solve()
-        => input
-            .SplitEmptyLines()
-            .Select(_ => _.SplitLines()
-                .Select(int.Parse)
-                .Sum())
-            .OrderDescending()
-            .Take(3)
-            .Sum();
+    public long Solve() => input
+        .SplitEmptyLines()
+        .Select(_ => _.SplitLines()
+            .Select(int.Parse)
+            .Sum())
+        .OrderDescending()
+        .Take(3)
+        .Sum();
 }
