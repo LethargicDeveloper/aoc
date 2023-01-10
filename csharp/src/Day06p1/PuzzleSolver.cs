@@ -1,0 +1,18 @@
+﻿using BenchmarkDotNet.Attributes;
+using System.Text.RegularExpressions;
+
+[MemoryDiagnoser]
+public partial class PuzzleSolver
+{
+    readonly string input;
+
+    public PuzzleSolver()
+    {
+        this.input = File.ReadAllText("01.txt");
+    }
+
+    [Benchmark]
+    public long Solve() => input
+        .Select((c, i) => (i, v: input[i..(i + 4)]))
+        .First(_ => _.v.Distinct().Count() == 4).i + 4;
+}
