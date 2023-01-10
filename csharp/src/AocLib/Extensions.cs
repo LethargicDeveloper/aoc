@@ -2,9 +2,6 @@
 
 public static class Extensions
 {
-    public static string[] SplitLines(this string str)
-        => str.Split(Environment.NewLine);
-
-    public static string[] SplitEmptyLines(this string str)
-        => str.Split($"{Environment.NewLine}{Environment.NewLine}");
+    public static void Log(this object obj)
+        => Console.WriteLine(obj);
 }
