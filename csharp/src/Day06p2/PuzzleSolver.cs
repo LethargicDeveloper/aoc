@@ -12,6 +12,6 @@ public partial class PuzzleSolver
 
     [Benchmark]
     public long Solve() => input
-        .Select((c, i) => (i, v: input[i..(i + 4)]))
-        .First(_ => _.v.Distinct().Count() == 4).i + 4;
+        .Select((c, i) => (i, v: input[i..(i + 14)]))
+        .First(_ => _.v.Distinct().Count() == 14).i + 14;
 }
