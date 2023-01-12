@@ -40,4 +40,12 @@ public readonly record struct Point
 
     public int ManhattanDistance(Point p)
         => ManhattanDistance(this, p);
+
+    public Point MoveToward(Point p)
+        => (X + Math.Sign(p.X - X), Y + Math.Sign(p.Y - Y));
+
+    public Point Up() => (X, Y - 1);
+    public Point Down() => (X, Y + 1);
+    public Point Left() => (X - 1, Y);
+    public Point Right() => (X + 1, Y);
 }
