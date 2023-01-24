@@ -37,5 +37,5 @@ public partial class PuzzleSolver
         return strengths.Sum();
     }
 
-    long SignalStrength(long x, long cycles) => x * cycles;
+    static long SignalStrength(long x, long cycles) => x * cycles;
 }

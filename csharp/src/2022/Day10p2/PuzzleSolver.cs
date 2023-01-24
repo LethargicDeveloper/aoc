@@ -36,7 +36,7 @@ public partial class PuzzleSolver
         return crt.ToString();
     }
 
-    void NextCycle(StringBuilder crt, int pos, ref int cycles)
+    static void NextCycle(StringBuilder crt, int pos, ref int cycles)
     {
         int x = (++cycles - 1) % 40;
 
