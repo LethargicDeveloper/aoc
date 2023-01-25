@@ -11,6 +11,7 @@
     <PackageReference Include="benchmarkdotnet" Version="0.13.3" />
     <PackageReference Include="morelinq" Version="3.3.2" />
     <PackageReference Include="OptimizedPriorityQueue" Version="5.1.0" />
+    <PackageReference Include="QuickGraph" Version="3.6.61119.7" />
   </ItemGroup>
 
   <ItemGroup>
