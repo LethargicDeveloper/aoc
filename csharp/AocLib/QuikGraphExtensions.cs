@@ -1,11 +1,13 @@
-﻿namespace QuikGraph;
+﻿using QuikGraph;
+
+namespace AocLib;
 
 public static class GraphExtensions
 {
     public static DelegateVertexAndEdgeListGraph<TVertex, TEdge> ToVertexAndEdgeListGraph<TVertex, TEdge, TValue>(this IDictionary<TVertex, TValue> dictionary)
         where TEdge : IEdge<TVertex>, IEquatable<TEdge>
         where TValue : IEnumerable<TEdge> =>
-        ToVertexAndEdgeListGraph(dictionary, kv => kv.Value);
+        dictionary.ToVertexAndEdgeListGraph(kv => kv.Value);
 
     public static DelegateVertexAndEdgeListGraph<TVertex, TEdge> ToVertexAndEdgeListGraph<TVertex, TEdge, TValue>(
         this IDictionary<TVertex, TValue> dictionary,
