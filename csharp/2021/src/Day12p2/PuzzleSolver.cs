@@ -1,5 +1,5 @@
 ﻿using BenchmarkDotNet.Attributes;
-using Priority_Queue;
+using System.Text;
 
 [MemoryDiagnoser]
 public partial class PuzzleSolver
@@ -14,144 +14,92 @@ public partial class PuzzleSolver
     [Benchmark]
     public long Solve()
     {
-        var map = this.input
+        var graph = new Dictionary<string, HashSet<string>>();
+        foreach (var node in input
             .SplitLines()
-            .Select(_ => _.ToCharArray())
-            .ToArray();
-
-        return GetStartPositions(map)
-            .Select(pos => new PathFinder(map, pos).MinDistance())
-            .Where(_ => _ > 0)
-            .Min();
-    }
-
-    static IEnumerable<Point> GetStartPositions(char[][] map)
-    {
-        var list = new List<Point>();
-        for (int y = 0; y < map.Length; ++y)
-            for (int x = 0; x < map[0].Length; ++x)
-                if (map[y][x] == 'a') list.Add((x, y));
-
-        return list;
-    }
-}
-
-class PathFinder
-{
-    readonly char[][] map;
-    readonly Point? startPos = null;
-
-    public PathFinder(char[][] map, Point? startPos = null)
-    {
-        this.startPos = startPos;
-        this.map = map;
-    }
-    static bool InRange(char height1, char height2)
-        => ("yz".Contains(height1) && height2 == 'E') || (height2 != 'E' && (height2 <= height1 + 1));
-
-    public long MinDistance()
-    {
-        var (dist, prev) = Dijkstra();
-        var path = ShortestPath(prev);
-        return dist[path[^1]];
-    }
-
-    (Point, Point) GetStartAndEndPos()
-    {
-        var startPos = this.startPos ?? (0, 0);
-        var endPos = (0, 0);
-        for (int y = 0; y < map.Length; ++y)
-            for (int x = 0; x < map[0].Length; ++x)
+            .Select(_ => _.Split('-')))
+        {
+            if (graph.ContainsKey(node[0]))
             {
-                var c = map[y][x];
+                graph[node[0]].Add(node[1]);
+            }
+            else if (node[1] != "start")
+            {
+                graph.Add(node[0], new HashSet<string>() { node[1] });
+            }
 
-                if (c == 'S')
+            if (graph.ContainsKey(node[1]))
+            {
+                graph[node[1]].Add(node[0]);
+            }
+            else if (node[0] != "start")
+            {
+                graph.Add(node[1], new HashSet<string>() { node[0] });
+            }
+        }
+
+        var sb = new StringBuilder();
+
+        var stack = new Stack<string>();
+        var visited = new Stack<string>();
+        long counter = 0;
+        foreach (var startNode in graph["start"])
+        {
+            visited.Push("start");
+
+            stack.Push(startNode);
+            while (stack.Count > 0)
+            {
+                var node = stack.Pop();
+                if (node == "done")
                 {
-                    map[y][x] = 'a';
-                    if (this.startPos == null)
+                    while (stack.TryPeek(out string? r) && r == "done")
                     {
-                        startPos = (x, y);
+                        stack.Pop();
+                        visited.Pop();
                     }
-                }
 
-                if (c == 'E')
-                {
-                    endPos = (x, y);
-                }
-            }
-
-        return (startPos, endPos);
-    }
-
-    List<Point> ShortestPath(Dictionary<Point, Point> prev)
-    {
-        var stack = new Stack<Point>();
-        var (_, target) = GetStartAndEndPos();
-
-        while (true)
-        {
-            stack.Push(target);
-            if (!prev.TryGetValue(target, out target))
-                break;
-        }
-
-        return stack.ToList();
-    }
-
-    (Dictionary<Point, long> dist, Dictionary<Point, Point> prev) Dijkstra()
-    {
-        var (start, end) = GetStartAndEndPos();
-
-        var queue = new SimplePriorityQueue<Point>();
-        var distance = new Dictionary<Point, long>();
-        var previous = new Dictionary<Point, Point>();
-
-        for (int y = 0; y < map.Length; ++y)
-            for (int x = 0; x < map[0].Length; ++x)
-            {
-                var v = (x, y);
-                distance[v] = v == start ? 0 : long.MaxValue;
-                queue.Enqueue(v, distance[v]);
-            }
-
-        while (queue.TryDequeue(out var u))
-        {
-            if (u == end) break;
-
-            foreach (var v in Neighbors(u).Where(queue.Contains))
-            {
-                if (!InRange(map[u.Y][u.X], map[v.Y][v.X]))
+                    visited.Pop();
                     continue;
+                }
 
-                var alt = distance[u] + 1;
-                if (alt < distance[v])
+                visited.Push(node);
+
+                if (node == "end")
                 {
-                    distance[v] = alt;
-                    previous[v] = u;
+                    sb.AppendLine(string.Join(",", visited.Reverse()));
+                    counter++;
+                    visited.Pop();
+                    continue;
+                }
 
-                    queue.UpdatePriority(v, alt);
+                var doubleCave = visited
+                    .Where(_ => _ != "start" && char.IsLower(_[0]))
+                    .GroupBy()
+                    .Where(_ => _.Count() == 2)
+                    .Any();
+
+                var children = graph[node]
+                    .Where(_ => !doubleCave || !visited.Where(v => char.IsLower(v[0])).Contains(_))
+                    .Where(_ => _ != "start")
+                    .ToList();
+
+                if (children.Count > 0)
+                {
+                    stack.Push("done");
+                    foreach (var child in children)
+                        stack.Push(child);
+                }
+                else
+                {
+                    visited.Pop();
                 }
             }
+
+            visited.Clear();
         }
 
-        return (distance, previous);
-    }
 
-    List<Point> Neighbors(Point point)
-    {
-        var points = new List<Point>();
-        if (point.X > 0)
-            points.Add((point.X - 1, point.Y));
-
-        if (point.X < map[0].Length - 1)
-            points.Add((point.X + 1, point.Y));
-
-        if (point.Y > 0)
-            points.Add((point.X, point.Y - 1));
-
-        if (point.Y < map.Length - 1)
-            points.Add((point.X, point.Y + 1));
-
-        return points;
+        return counter;
     }
 }
