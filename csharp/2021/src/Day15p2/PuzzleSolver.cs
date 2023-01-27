@@ -1,5 +1,5 @@
 ﻿using BenchmarkDotNet.Attributes;
-using System.Text.RegularExpressions;
+using Priority_Queue;
 
 [MemoryDiagnoser]
 public partial class PuzzleSolver
@@ -14,62 +14,127 @@ public partial class PuzzleSolver
     [Benchmark]
     public long Solve()
     {
-        var points = this.input
+        var graph = input
             .SplitLines()
-            .Select(Parse)
-            .Select(_ => (_.Sensor, Dist: _.Sensor.ManhattanDistance(_.Beacon)))
-            .ToList();
+            .Select(_ => _.Select(c => (int)char.GetNumericValue(c)).ToArray())
+            .ToArray();
 
-        var beacon = FindBeacon(points, max: 4000000);
-        var tuning = TuningFrequency(beacon);
+        var newGraph = ExpandGraph(graph);
 
-        return tuning;
+        var pathFinder = new PathFinder(newGraph);
+        return pathFinder.TotalDistance();
     }
 
-    (Point Sensor, Point Beacon) Parse(string input) =>
-        NumberRegex().Matches(input).ToArray() switch
-        {
-            var a => (
-                (X: int.Parse(a[0].Value), Y: int.Parse(a[1].Value)),
-                (X: int.Parse(a[2].Value), Y: int.Parse(a[3].Value))
-            )
-        };
-
-    static Point FindBeacon(List<(Point Sensor, int Dist)> points, int max)
+    static int[][] ExpandGraph(int[][] graph)
     {
-        for (int y = 0; y < max; ++y)
+        var size = graph.Length;
+
+        var newGraph = new int[size * 5][];
+        for (int y = 0; y < size * 5; ++y)
+            newGraph[y] = new int[size * 5];
+
+        var sizex = -1;
+        var sizey = -1;
+        for (int y = 0; y < size * 5; ++y)
         {
-            var area = new List<(int sx, int ex)>();
-            foreach (var point in points)
+            if (y % size == 0) ++sizey;
+            for (int x = 0; x < size * 5; ++x)
             {
-                var (sensor, dist) = point;
-                var offset = Math.Abs(y - sensor.Y);
-                var startX = Math.Clamp((sensor.X - dist) + offset, 0, max);
-                var endX = Math.Clamp((sensor.X + dist) - offset, 0, max);
-                area.Add((startX, endX));
+                var yy = y % size;
+                var xx = x % size;
+                if (x % size == 0) ++sizex;
+
+                var val = graph[yy][xx] + (sizex + sizey);
+                newGraph[y][x] = val > 9 ? (val % 10) + 1 : val;
             }
 
-            area.Sort();
-            int cur = 0;
-            for (int x = 0; x < area.Count; ++x)
+            sizex = -1;
+        }
+
+        return newGraph;
+    }
+}
+
+class PathFinder
+{
+    readonly int[][] graph;
+    readonly int size;
+
+    public PathFinder(int[][] graph)
+    {
+        this.graph = graph;
+        this.size = graph.Length;
+    }
+
+    public long TotalDistance()
+    {
+        var (dist, prev) = Dijkstra(graph);
+        var path = ShortestPath(prev);
+        return dist[path[^1]];
+    }
+
+    List<Point> ShortestPath(Dictionary<Point, Point> prev)
+    {
+        var stack = new Stack<Point>();
+        var target = new Point(size - 1, size - 1);
+
+        while (true)
+        {
+            stack.Push(target);
+            if (!prev.TryGetValue(target, out target))
+                break;
+        }
+
+        return stack.ToList();
+    }
+
+    (Dictionary<Point, long> dist, Dictionary<Point, Point> prev) Dijkstra(int[][] graph)
+    {
+        var start = new Point(0, 0);
+        var end = new Point(size - 1, size - 1);
+
+        var queue = new SimplePriorityQueue<Point>();
+        var distance = new Dictionary<Point, long>();
+        var previous = new Dictionary<Point, Point>();
+
+        for (int y = 0; y < size; ++y)
+            for (int x = 0; x < size; ++x)
             {
-                var (sx, ex) = area[x];
-                if (sx <= cur && ex > cur)
+                var v = new Point(x, y);
+                distance[v] = long.MaxValue;
+                queue.Enqueue(v, distance[v]);
+            }
+
+        distance[start] = 0;
+
+        while (queue.Count > 0)
+        {
+            var u = queue.Dequeue();
+            if (u == end) break;
+
+            foreach (var v in Neighbors(u).Where(_ => queue.Contains(_)))
+            {
+                var alt = distance[u] + graph[v.Y][v.X];
+                if (alt < distance[v])
                 {
-                    cur = ex + 1;
-                }
-                else if (sx > cur && sx < max)
-                {
-                    return (sx - 1, y);
+                    distance[v] = alt;
+                    previous[v] = u;
+
+                    queue.UpdatePriority(v, alt);
                 }
             }
         }
 
-        return (0, 0);
+        return (distance, previous);
     }
 
-    public static long TuningFrequency(Point p) => (p.X * 4000000L) + p.Y;
-
-    [GeneratedRegex("-?\\d+")]
-    private static partial Regex NumberRegex();
+    List<Point> Neighbors(Point point)
+    {
+        var points = new List<Point>();
+        if (point.X > 0) points.Add((point.X - 1, point.Y));
+        if (point.X < size - 1) points.Add((point.X + 1, point.Y));
+        if (point.Y > 0) points.Add((point.X, point.Y - 1));
+        if (point.Y < size - 1) points.Add((point.X, point.Y + 1));
+        return points;
+    }
 }

@@ -1,6 +1,5 @@
 ﻿using BenchmarkDotNet.Attributes;
-using MoreLinq;
-using System.Text.RegularExpressions;
+using Priority_Queue;
 
 [MemoryDiagnoser]
 public partial class PuzzleSolver
@@ -15,43 +14,96 @@ public partial class PuzzleSolver
     [Benchmark]
     public long Solve()
     {
-        var points = this.input
+        var graph = input
             .SplitLines()
-            .Select(Parse);
+            .Select(_ => _.Select(c => (int)char.GetNumericValue(c)).ToArray())
+            .ToArray();
 
-        var area = DetectedArea(points, row: 2000000).OrderBy(_ => _.X);
+        var pathFinder = new PathFinder(graph);
+        return pathFinder.TotalDistance();
+    }
+}
 
-        return area.Count();
+class PathFinder
+{
+    readonly int[][] graph;
+    readonly int size;
+
+    public PathFinder(int[][] graph)
+    {
+        this.graph = graph;
+        this.size = graph.Length;
     }
 
-    (Point Sensor, Point Beacon) Parse(string input) =>
-        NumberRegex().Matches(input).ToArray() switch
-        {
-            var a => (
-                (X: int.Parse(a[0].Value), Y: int.Parse(a[1].Value)),
-                (X: int.Parse(a[2].Value), Y: int.Parse(a[3].Value))
-            )
-        };
-
-    static HashSet<Point> DetectedArea(IEnumerable<(Point Sensor, Point Beacon)> points, int row)
+    public long TotalDistance()
     {
-        var area = new HashSet<Point>();
-        foreach (var point in points)
+        var (dist, prev) = Dijkstra(graph);
+        var path = ShortestPath(prev);
+        return dist[path[^1]];
+    }
+
+    List<Point> ShortestPath(Dictionary<Point, Point> prev)
+    {
+        var stack = new Stack<Point>();
+        var target = new Point(size - 1, size - 1);
+
+        while (true)
         {
-            var (sensor, beacon) = point;
-            var dist = sensor.ManhattanDistance(beacon);
-            var offset = Math.Abs(row - sensor.Y);
-            var startX = (sensor.X - dist) + offset;
-            var endX = (sensor.X + dist) - offset;
-            for (int x = startX; x < endX; ++x)
+            stack.Push(target);
+            if (!prev.TryGetValue(target, out target))
+                break;
+        }
+
+        return stack.ToList();
+    }
+
+    (Dictionary<Point, long> dist, Dictionary<Point, Point> prev) Dijkstra(int[][] graph)
+    {
+        var start = new Point(0, 0);
+        var end = new Point(size - 1, size - 1);
+
+        var queue = new SimplePriorityQueue<Point>();
+        var distance = new Dictionary<Point, long>();
+        var previous = new Dictionary<Point, Point>();
+
+        for (int y = 0; y < size; ++y)
+            for (int x = 0; x < size; ++x)
             {
-                area.Add((x, row));
+                var v = new Point(x, y);
+                distance[v] = long.MaxValue;
+                queue.Enqueue(v, distance[v]);
+            }
+
+        distance[start] = 0;
+
+        while (queue.Count > 0)
+        {
+            var u = queue.Dequeue();
+            if (u == end) break;
+
+            foreach (var v in Neighbors(u).Where(_ => queue.Contains(_)))
+            {
+                var alt = distance[u] + graph[v.Y][v.X];
+                if (alt < distance[v])
+                {
+                    distance[v] = alt;
+                    previous[v] = u;
+
+                    queue.UpdatePriority(v, alt);
+                }
             }
         }
 
-        return area;
+        return (distance, previous);
     }
 
-    [GeneratedRegex("-?\\d+")]
-    private static partial Regex NumberRegex();
+    List<Point> Neighbors(Point point)
+    {
+        var points = new List<Point>();
+        if (point.X > 0) points.Add((point.X - 1, point.Y));
+        if (point.X < size - 1) points.Add((point.X + 1, point.Y));
+        if (point.Y > 0) points.Add((point.X, point.Y - 1));
+        if (point.Y < size - 1) points.Add((point.X, point.Y + 1));
+        return points;
+    }
 }
