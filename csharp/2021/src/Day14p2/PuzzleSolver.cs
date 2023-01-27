@@ -1,5 +1,5 @@
 ﻿using BenchmarkDotNet.Attributes;
-using MoreLinq;
+using System.Text;
 
 [MemoryDiagnoser]
 public partial class PuzzleSolver
@@ -14,89 +14,61 @@ public partial class PuzzleSolver
     [Benchmark]
     public long Solve()
     {
-        var grid = ParseInput();
+        var lines = input.SplitLines();
+        var template = lines.First();
+        var pairs = lines
+            .Skip(1)
+            .Select(_ => _.Split(" -> "))
+            .ToDictionary(_ => _[0], _ => _[1]);
 
-        var spawnPos = (Y: 0, X: 500);
-        var gridBottom = CalcYMax(grid) + 1;
-        for (int x = 0; x < grid[0].Length; ++x)
-            grid[gridBottom][x] = '#';
+        var polymers = template
+            .Skip(1)
+            .Select((_, i) => $"{template[i]}{_}")
+            .GroupBy(_ => _)
+            .ToDictionary(_ => _.Key, _ => _.LongCount());
 
-        var sandPos = spawnPos;
-        int sandCount = 1;
-        while (true)
+        for (int step = 0; step < 40; ++step)
         {
-            if ("#O".Contains(grid[sandPos.Y + 1][sandPos.X]))
+            var newPolymers = new Dictionary<string, long>();
+            foreach (var polymer in polymers)
             {
-                if ("#O".Contains(grid[sandPos.Y + 1][sandPos.X - 1]))
+                if (pairs.TryGetValue(polymer.Key, out string? replace))
                 {
-                    if ("#O".Contains(grid[sandPos.Y + 1][sandPos.X + 1]))
+                    var amount = polymers[polymer.Key];
+                    polymers[polymer.Key] = 0;
+
+                    var newPolymer1 = $"{polymer.Key[0]}{replace}";
+                    var newPolymer2 = $"{replace}{polymer.Key[1]}";
+
+                    if (!newPolymers.TryAdd(newPolymer1, amount))
                     {
-                        grid[sandPos.Y][sandPos.X] = 'O';
-                        if (sandPos == spawnPos) break;
-                        sandPos = spawnPos;
-                        sandCount++;
-                        continue;
+                        newPolymers[newPolymer1] += amount;
                     }
-                    else
+
+                    if (!newPolymers.TryAdd(newPolymer2, amount))
                     {
-                        sandPos = (sandPos.Y + 1, sandPos.X + 1);
+                        newPolymers[newPolymer2] += amount;
                     }
                 }
-                else
-                {
-                    sandPos = (sandPos.Y + 1, sandPos.X - 1);
-                }
             }
-            else
+
+            foreach (var newPolymer in newPolymers)
             {
-                sandPos = (sandPos.Y + 1, sandPos.X);
-            }
-        }
-
-        return sandCount;
-    }
-
-    static int CalcYMax(char[][] grid) => grid.Select((_, i) => (i, v: Array.IndexOf(_, '#'))).Last(_ => _.v != -1).i + 1;
-
-    char[][] ParseInput()
-    {
-        var grid = new char[1000][];
-        for (int y = 0; y < grid.Length; ++y)
-        {
-            grid[y] = new char[1000];
-            for (int x = 0; x < grid[0].Length; ++x)
-                grid[y][x] = '.';
-        }
-        grid[0][500] = '+';
-
-        var points = this.input
-            .SplitLines()
-            .Select(line => line
-                .Split(" -> ")
-                .Select(_ => _.Split(",") switch { var a => (Y: int.Parse(a[1]), X: int.Parse(a[0])) })
-                .ToArray())
-            .ToArray();
-
-        foreach (var point in points)
-        {
-            for (int i = 0; i < point.Length - 1; ++i)
-            {
-                var yStart = Math.Min(point[i].Y, point[i + 1].Y);
-                var yRange = Enumerable.Range(yStart, Math.Abs(point[i + 1].Y - point[i].Y) + 1).ToArray();
-
-                var xStart = Math.Min(point[i].X, point[i + 1].X);
-                var xRange = Enumerable.Range(xStart, Math.Abs(point[i + 1].X - point[i].X) + 1).ToArray();
-
-                for (int y = yRange[0]; y <= yRange[^1]; ++y)
+                if (!polymers.TryAdd(newPolymer.Key, newPolymer.Value))
                 {
-                    for (int x = xRange[0]; x <= xRange[^1]; ++x)
-                    {
-                        grid[y][x] = '#';
-                    }
+                    polymers[newPolymer.Key] += newPolymer.Value;
                 }
             }
         }
 
-        return grid;
+        var letterValues = polymers
+            .SelectMany(_ => _.Key.Select(k => (key: k, val: _.Value)))
+            .GroupBy(_ => _.key)
+            .Select(_ => (key: _.Key, val: _.Sum(_ => _.val)));
+
+        var max = (long)Math.Round(letterValues.MaxBy(_ => _.val).val / 2.0, MidpointRounding.AwayFromZero);
+        var min = (long)Math.Round(letterValues.MinBy(_ => _.val).val / 2.0, MidpointRounding.AwayFromZero);
+        
+        return max - min;
     }
 }

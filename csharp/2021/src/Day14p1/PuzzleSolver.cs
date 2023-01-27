@@ -1,5 +1,5 @@
 ﻿using BenchmarkDotNet.Attributes;
-using MoreLinq;
+using System.Text;
 
 [MemoryDiagnoser]
 public partial class PuzzleSolver
@@ -14,86 +14,43 @@ public partial class PuzzleSolver
     [Benchmark]
     public long Solve()
     {
-        var grid = ParseInput();
-
-        var spawnPos = (Y: 0, X: 500);
-        var gridBottom = CalcYMax(grid);
-
-        var sandPos = spawnPos;
-        int sandCount = 0;
-        while (sandPos.Y < gridBottom)
-        {
-            if ("#O".Contains(grid[sandPos.Y + 1][sandPos.X]))
+        var lines = input.SplitLines();
+        var template = lines.First();
+        var pairs = lines
+            .Skip(1)
+            .Select(_ => _.Split(" -> ") switch
             {
-                if ("#O".Contains(grid[sandPos.Y + 1][sandPos.X - 1]))
+                var x => (pair: x[0], replace: x[1])
+            });
+
+        for (int i = 0; i < 10; ++i)
+        {
+            var list = new List<(string replace, int pos)>();
+            for (int p = 0; p < template.Length - 1; ++p)
+            {
+                var len = p + 2;
+                var polymer = template[p..len];
+                var (pair, replace) = pairs.FirstOrDefault(_ => _.pair == polymer);
+                if (pair != null)
                 {
-                    if ("#O".Contains(grid[sandPos.Y + 1][sandPos.X + 1]))
-                    {
-                        grid[sandPos.Y][sandPos.X] = 'O';
-                        sandPos = spawnPos;
-                        sandCount++;
-                        continue;
-                    }
-                    else
-                    {
-                        sandPos = (sandPos.Y + 1, sandPos.X + 1);
-                    }
-                }
-                else
-                {
-                    sandPos = (sandPos.Y + 1, sandPos.X - 1);
+                    list.Add((replace, p));
                 }
             }
-            else
+
+            var sb = new StringBuilder(template);
+            var counter = 1;
+            foreach (var (replace, pos) in list.OrderBy(_ => _.pos))
             {
-                sandPos = (sandPos.Y + 1, sandPos.X);
+                sb.Insert(pos + counter, replace);
+                counter++;
             }
+
+            template = sb.ToString();
         }
 
-        return sandCount;
-    }
-
-    static int CalcYMax(char[][] grid) => grid.Select((_, i) => (i, v: Array.IndexOf(_, '#'))).Last(_ => _.v != -1).i + 1;
-
-    char[][] ParseInput()
-    {
-        var grid = new char[1000][];
-        for (int y = 0; y < grid.Length; ++y)
-        {
-            grid[y] = new char[1000];
-            for (int x = 0; x < grid[0].Length; ++x)
-                grid[y][x] = '.';
-        }
-        grid[0][500] = '+';
-
-        var points = this.input
-            .SplitLines()
-            .Select(line => line
-                .Split(" -> ")
-                .Select(_ => _.Split(",") switch { var a => (Y: int.Parse(a[1]), X: int.Parse(a[0])) })
-                .ToArray())
-            .ToArray();
-
-        foreach (var point in points)
-        {
-            for (int i = 0; i < point.Length - 1; ++i)
-            {
-                var yStart = Math.Min(point[i].Y, point[i + 1].Y);
-                var yRange = Enumerable.Range(yStart, Math.Abs(point[i + 1].Y - point[i].Y) + 1).ToArray();
-
-                var xStart = Math.Min(point[i].X, point[i + 1].X);
-                var xRange = Enumerable.Range(xStart, Math.Abs(point[i + 1].X - point[i].X) + 1).ToArray();
-
-                for (int y = yRange[0]; y <= yRange[^1]; ++y)
-                {
-                    for (int x = xRange[0]; x <= xRange[^1]; ++x)
-                    {
-                        grid[y][x] = '#';
-                    }
-                }
-            }
-        }
-
-        return grid;
+        var g = template.GroupBy();
+        var min = g.Min(_ => _.Count());
+        var max = g.Max(_ => _.Count());
+        return max - min;
     }
 }

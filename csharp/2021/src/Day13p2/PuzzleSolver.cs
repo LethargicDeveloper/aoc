@@ -1,6 +1,5 @@
 ﻿using BenchmarkDotNet.Attributes;
-using MoreLinq;
-using System.Diagnostics;
+using System.Text;
 
 [MemoryDiagnoser]
 public partial class PuzzleSolver
@@ -13,135 +12,60 @@ public partial class PuzzleSolver
     }
 
     [Benchmark]
-    public long Solve()
+    public string Solve()
     {
-        var packetInput = this.input
-             .SplitEmptyLines()
-             .Select(_ => _.SplitLines().ToList())
-             .ToList();
-
-        packetInput.Add(new List<string> { "[[2]]", "[[6]]" });
-
-        var packets = packetInput
-             .Select(Packet.Parse)
-             .Select(_ => new[] { _.Item1, _.Item2 })
-             .SelectMany()
-             .OrderBy(_ => _, new Packet())
-             .Select((v, i) => (i: i + 1, v))
-             .SkipWhile(_ => _.v.Input != "[[2]]")
-             .TakeUntil(_ => _.v.Input == "[[6]]")
-             .ToList();
-
-        return packets[0].i * packets[^1].i;
-    }
-}
-
-class Packet : IComparer<Packet>
-{
-    readonly string input;
-    readonly List<object> packets;
-
-    public Packet()
-        : this("", new List<object>())
-    { }
-
-    [DebuggerStepThrough]
-    private Packet(string input, List<object> packets)
-    {
-        this.input = input;
-        this.packets = packets;
-    }
-
-    public string Input => this.input;
-
-    public static (Packet, Packet) Parse(List<string> packet)
-        => packet.Select(CreatePacket).ToArray() switch { var a => (a[0], a[1]) };
-
-    static Packet CreatePacket(string input)
-    {
-        var packet = new List<object>();
-        var stack = new Stack<List<object>>();
-        stack.Push(packet);
-
-        var current = packet;
-        var doublePop = false;
-        for (int i = 1; i < input.Length; ++i)
+        var points = new HashSet<Point>();
+        var folds = new List<Fold>();
+        
+        foreach (var line in input.SplitLines())
         {
-            var token = input[i];
-            if (token == ',') continue;
-
-            if (token == '[')
+            if (line.StartsWith("fold along"))
             {
-                doublePop = true;
-                var list = new List<object>();
-                current.Add(list);
-                stack.Push(list);
-                current = list;
-            }
-            else if (token == ']')
-            {
-                if (doublePop)
-                {
-                    stack.TryPop(out _);
-                    doublePop = false;
-                }
-
-                if (!stack.TryPop(out current))
-                    break;
+                var p = line.Split('=');
+                folds.Add(new Fold
+                (
+                    p[0][^1].ToString().ToLower(),
+                    int.Parse(p[1])
+                ));
             }
             else
             {
-                var index = input.IndexOfAny(new[] { ',', ']' }, i);
-                var value = input[i..index];
-                current.Add(int.Parse(value));
-                i = index - 1;
+                var p = line.Split(',');
+                points.Add((int.Parse(p[0]), int.Parse(p[1])));
             }
         }
 
-        return new Packet(input, packet);
-    }
 
-    public int Compare(Packet? x, Packet? y)
-        => Compare((x ?? new Packet(), y ?? new Packet()));
-
-    public static int Compare((Packet, Packet) packets)
-        => CompareInternal(packets).Value;
-
-    static (int Value, bool ExitEarly) CompareInternal((Packet, Packet) packets)
-    {
-        var (p1, p2) = packets;
-
-        for (int i = 0; i < p1.packets.Count; ++i)
+        foreach (var fold in folds)
         {
-            if (i > p2.packets.Count - 1)
-                return (1, true);
+            var height = fold.Position * 2;
+            var width = fold.Position * 2;
 
-            var p1item = p1.packets[i];
-            var p2item = p2.packets[i];
+            var pointsToFold = points
+                .Where(_ => fold.Axis == "x" ? _.X > fold.Position : _.Y > fold.Position)
+                .Select(_ => fold.Axis == "x"
+                    ? new Point(fold.Position - (_.X - (width - fold.Position)), _.Y)
+                    : new Point(_.X, (fold.Position - (_.Y - (height - fold.Position)))));
 
-            if (p1item is int int1 && p2item is int int2)
-            {
-                if (int1 < int2) return (-1, true);
-                if (int1 > int2) return (1, true);
-            }
-            else if (p1item is List<object> list1 && p2item is List<object> list2)
-            {
-                var result = CompareInternal((new Packet("", list1), new Packet("", list2)));
-                if (result.ExitEarly) return result;
-            }
-            else
-            {
-                var v1 = p1item is List<object> ? (List<object>)p1item : new List<object> { p1item };
-                var v2 = p2item is List<object> ? (List<object>)p2item : new List<object> { p2item };
-
-                p1.packets[i] = v1;
-                p2.packets[i] = v2;
-                i--;
-            }
+            points = points
+                .Where(_ => fold.Axis == "x" ? _.X < fold.Position : _.Y < fold.Position)
+                .Union(pointsToFold)
+                .ToHashSet();
         }
 
-        var exitEarly = p1.packets.Count < p2.packets.Count;
-        var equal = p1.packets.Count == p2.packets.Count ? 0 : -1;
-        return (equal, exitEarly);
+        var h = points.Select(_ => _.Y).Max();
+        var w = points.Select(_ => _.X).Max();
+
+        var sb = new StringBuilder();
+        for (int y = 0; y <= h; ++y)
+        {
+            for (int x = 0; x <= w; ++x)
+                sb.Append(points.Contains((x, y)) ? "#" : ".");
+            sb.AppendLine();
+        }
+
+        return sb.ToString();
     }
+
+    record Fold(string Axis, int Position);
 }
