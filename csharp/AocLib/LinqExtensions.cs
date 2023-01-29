@@ -20,4 +20,20 @@ public static class LinqExtensions
     public static T Product<T>(this IEnumerable<T> list)
         where T : struct, INumber<T>
         => list.Aggregate(T.One, (acc, cur) => acc * cur);
+
+    public static IEnumerable<T> Flatten<T>(
+            this IEnumerable<T> source,
+            Func<T, IEnumerable<T>> childSelector)
+    {
+        foreach (var element in source)
+        {
+            var children = childSelector(element);
+            foreach (var child in Flatten(children, childSelector))
+            {
+                yield return child;
+            }
+
+            yield return element;
+        }
+    }
 }

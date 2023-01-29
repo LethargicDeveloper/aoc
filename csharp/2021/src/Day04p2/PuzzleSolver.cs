@@ -1,4 +1,5 @@
 ﻿using BenchmarkDotNet.Attributes;
+using MoreLinq;
 
 [MemoryDiagnoser]
 public partial class PuzzleSolver
@@ -22,9 +23,8 @@ public partial class PuzzleSolver
 
         var boards = lines
             .Skip(1)
-            .WithIndex()
-            .GroupBy(_ => _.Index / 5)
-            .Select(g => Board.Create(g.Select(_ => _.Value)))
+            .Batch(5)
+            .Select(Board.Create)
             .ToList();
 
         var loser = GetLosingBoard(nums, boards);
