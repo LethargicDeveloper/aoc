@@ -13,89 +13,195 @@ public partial class PuzzleSolver
     [Benchmark]
     public long Solve()
     {
-        var points = GetPoints();
+        var snailfish = new Snailfish();
+        var lines = input.SplitLines();
 
-        var range = GetMinMaxRanges(points);
-        var start = (range.MinX, range.MinY, range.MinZ);
-        var seen = new HashSet<Point3D>();
-        var stack = new Stack<Point3D>();
+        return (
+            from l1 in lines
+            from l2 in lines
+            where l1 != l2
+            let m1 = new Snailfish(l1).Add(l2).Magnitude()
+            let m2 = new Snailfish(l2).Add(l1).Magnitude()
+            select Math.Max(m1, m2)
+        ).Max();
+    }
+}
 
-        seen.Add(start);
-        stack.Push(start);
+class Snailfish
+{
+    string snailfish = string.Empty;
 
-        while (stack.TryPop(out var point))
+    public Snailfish() { }
+    public Snailfish(string initial)
+    {
+        this.snailfish = Reduce(initial);
+    }
+
+    public Snailfish Add(string snailfish)
+    {
+        this.snailfish = string.IsNullOrEmpty(this.snailfish)
+            ? Reduce(snailfish)
+            : Reduce($"[{this.snailfish},{snailfish}]");
+        return this;
+    }
+
+    static List<string> Expand(string snailfish)
+    {
+        var expanded = new List<string>();
+        for (int i = 0; i < snailfish.Length; ++i)
         {
-            foreach (var neighbor in GetNeighbors(point))
+            if (char.IsDigit(snailfish[i]))
             {
-                if (!InRange(neighbor, range)) continue;
-                if (seen.Contains(neighbor)) continue;
-                if (points.Contains(neighbor))
-                {
-                    seen.Add(neighbor);
-                    continue;
-                };
-
-                seen.Add(neighbor);
-                stack.Push(neighbor);
+                int end = snailfish.AsSpan(i).IndexOfAny(',', ']');
+                var num = snailfish.AsSpan(i, end).ToString();
+                expanded.Add(num);
+                i += end - 1;
             }
+            else expanded.Add(snailfish[i].ToString());
         }
 
-        var surfaceArea = 4302;
-        int x, y, z;
-        for (x = range.MinX; x <= range.MaxX; ++x)
-        {
-            for (y = range.MinY; y <= range.MaxY; ++y)
-            {
-                for (z = range.MinZ; z <= range.MaxZ; ++z)
-                {
-                    var p = (x, y, z);
-                    if (seen.Contains(p) || points.Contains(p))
-                        continue;
+        return expanded;
+    }
 
-                    var n = GetNeighbors(p);
-                    surfaceArea -= n.Where(_ => seen.Contains(_) || points.Contains(_)).Count();
+    static string Reduce(string snailfish)
+    {
+        var expanded = Expand(snailfish);
+
+        List<string> result = expanded;
+        int length = 0;
+
+        while (length != result.Count)
+        {
+            while (length != result.Count)
+            {
+                length = result.Count;
+                result = Explode(result);
+            }
+
+            length = result.Count;
+            result = Split(result);
+        }
+
+        return string.Join(string.Empty, result);
+    }
+
+    static List<string> Explode(List<string> snailfish)
+    {
+        var exploded = new List<string>();
+        var hasExploded = false;
+
+        int parenCount = 0;
+        for (int i = 0; i < snailfish.Count; ++i)
+        {
+            if (snailfish[i] == "[")
+            {
+                parenCount++;
+                if (parenCount > 4 && !hasExploded)
+                {
+                    if (int.TryParse(snailfish[i + 1], out int n1) &&
+                        int.TryParse(snailfish[i + 3], out int n2))
+                    {
+                        hasExploded = true;
+
+                        var prevNum = GetPrevNum(snailfish, i);
+                        var nextNum = GetNextNum(snailfish, i + 4);
+                        if (prevNum.Index > -1) exploded[prevNum.Index] = (n1 + prevNum.Num).ToString();
+                        if (nextNum.Index > -1) snailfish[nextNum.Index] = (n2 + nextNum.Num).ToString();
+                        exploded.Add("0");
+                        if (snailfish[i - 1] != ",")
+                        {
+                            exploded.Add(",");
+                            i++;
+                        }
+                        i += 4;
+                        continue;
+                    }
                 }
             }
+            else if (snailfish[i] == "]") parenCount--;
+
+            exploded.Add(snailfish[i]);
         }
 
-        return surfaceArea;
+        return exploded;
     }
 
-    static bool InRange(Point3D point, MinMax range)
+    static (int Index, int Num) GetPrevNum(List<string> snailfish, int startIndex)
     {
-        var (x, y, z) = point;
-        return (x >= range.MinX && y >= range.MinY && z >= range.MinZ &&
-                x <= range.MaxX && y <= range.MaxY && z <= range.MaxZ);
+        for (int i = startIndex; i > 0; --i)
+            if (int.TryParse(snailfish[i], out var num))
+                return (i, num);
+
+        return (-1, 0);
     }
 
-    static Point3D[] GetNeighbors(Point3D point) =>
-        new Point3D[] 
-        { 
-            point.Right(),
-            point.Left(),
-            point.Down(),
-            point.Up(),
-            point.Forward(),
-            point.Backward()
-        };
-
-    static MinMax GetMinMaxRanges(HashSet<Point3D> points)
+    static (int Index, int Num) GetNextNum(List<string> snailfish, int startIndex)
     {
-        var minX = points.Min(_ => _.X) - 1;
-        var maxX = points.Max(_ => _.X) + 1;
-        var minY = points.Min(_ => _.Y) - 1;
-        var maxY = points.Max(_ => _.Y) + 1;
-        var minZ = points.Min(_ => _.Z) - 1;
-        var maxZ = points.Max(_ => _.Z) + 1;
-        return new MinMax(minX, maxX, minY, maxY, minZ, maxZ);
+        for (int i = startIndex; i < snailfish.Count; ++i)
+            if (int.TryParse(snailfish[i], out var num))
+                return (i, num);
+
+        return (-1, 0);
     }
 
-    HashSet<Point3D> GetPoints() => this.input
-        .SplitLines()
-        .Select(_ => _.Split(',') switch
+    static List<string> Split(List<string> snailfish)
+    {
+        var split = new List<string>();
+        var hasSplit = false;
+
+        for (int i = 0; i < snailfish.Count; ++i)
         {
-            var p => new Point3D(int.Parse(p[0]), int.Parse(p[1]), int.Parse(p[2]))
-        }).ToHashSet();
+            if (int.TryParse(snailfish[i], out var num))
+            {
+                if (num >= 10 && !hasSplit)
+                {
+                    hasSplit = true;
+                    var n1 = (int)Math.Floor(num / 2.0);
+                    var n2 = (int)Math.Ceiling(num / 2.0);
+                    split.Add("[");
+                    split.Add(n1.ToString());
+                    split.Add(",");
+                    split.Add(n2.ToString());
+                    split.Add("]");
+                    continue;
+                }
+            }
 
-    record MinMax(int MinX, int MaxX, int MinY, int MaxY, int MinZ, int MaxZ);
+            split.Add(snailfish[i]);
+        }
+
+        return split;
+    }
+
+    public long Magnitude()
+    {
+        var expand = Expand(this.snailfish);
+
+        var stack = new Stack<int>();
+        for (int i = 0; i < expand.Count; ++i)
+        {
+            if (int.TryParse(expand[i], out var n1))
+            {
+                if (int.TryParse(expand[i + 2], out var n2))
+                {
+                    stack.Push((n1 * 3) + (n2 * 2));
+                    i += 3;
+                }
+                else
+                {
+                    stack.Push(n1);
+                }
+            }
+            else if (expand[i] == "]")
+            {
+                var n2 = stack.Pop();
+                n1 = stack.Pop();
+                stack.Push((n1 * 3) + (n2 * 2));
+            }
+        }
+
+        return stack.Pop();
+    }
+
+    public override string ToString() => snailfish;
 }
