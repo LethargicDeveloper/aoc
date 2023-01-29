@@ -1,20 +1,10 @@
 ﻿using BenchmarkDotNet.Attributes;
+using System.Text.RegularExpressions;
 
 [MemoryDiagnoser]
 public partial class PuzzleSolver
 {
     readonly string input;
-
-    static readonly int Floor = 0b111111111;
-    static readonly int Wall = 0b100000001;
-    static readonly int[][] Pieces = new[]
-    {
-        new int[] { 0b000111100 },
-        new int[] { 0b000010000, 0b000111000, 0b000010000 },
-        new int[] { 0b000001000, 0b000001000, 0b000111000 },
-        new int[] { 0b000100000, 0b000100000, 0b000100000, 0b000100000 },
-        new int[] { 0b000110000, 0b000110000 }
-    };
 
     public PuzzleSolver()
     {
@@ -24,142 +14,109 @@ public partial class PuzzleSolver
     [Benchmark]
     public long Solve()
     {
-        var board = new List<int>() { Floor };
-        var heightMap = new Dictionary<int, int>();
+        var target = Parse(input);
+        var xVelocities = GenerateXVelocities();
+        var yVelocities = GenerateYVelocities();
+        var velocities =
+            from x in xVelocities
+            from y in yVelocities
+            select new Point(x, y);
 
-        PlayGame(board, heightMap);
+        var launcher = new Launcher(target);
+        var hits = new List<Point>();
+        foreach (var velocity in velocities)
+        {
+            var result = launcher.Launch(velocity);
 
-        return FindPattern(board, heightMap);
+            if (result.Hit)
+                hits.Add(velocity);
+        }
+
+        return hits.Count;
     }
 
-    static long FindPattern(List<int> board, Dictionary<int, int> heightMap)
-    {
-        int window = 10;
-        int prePatternHeight = 0;
+    static IEnumerable<int> GenerateXVelocities() => Enumerable.Range(1, 300);
+    static IEnumerable<int> GenerateYVelocities() => Enumerable.Range(-400, 800);
 
-        while (window * 2 < board.Count)
+    static Rect Parse(string file)
+    {
+        var match = NumbersRegex().Match(file);
+        var x1 = int.Parse(match.Groups["x1"].Value);
+        var x2 = int.Parse(match.Groups["x2"].Value);
+        var y1 = int.Parse(match.Groups["y1"].Value);
+        var y2 = int.Parse(match.Groups["y2"].Value);
+
+        return new Rect
         {
-            for (int y = 0; y < board.Count - (window * 2); ++y)
+            Left = x1,
+            Top = y2,
+            Right = x2,
+            Bottom = y1
+        };
+    }
+
+    [GeneratedRegex("x=(?<x1>-?\\d+)\\.\\.(?<x2>-?\\d+), y=(?<y1>-?\\d+)..(?<y2>-?\\d+)")]
+    private static partial Regex NumbersRegex();
+}
+
+record LauncherResult(bool Hit, int MaxHeight);
+
+class Launcher
+{
+    readonly Rect target;
+
+    public Launcher(Rect target)
+    {
+        this.target = target;
+    }
+
+    public LauncherResult Launch(Point velocity)
+    {
+        var origin = new Point(0, 0);
+        bool hit = false;
+        int maxHeight = 0;
+
+        var currPos = origin;
+        int maxY = 0;
+        while (true)
+        {
+            if (target.ContainsCartesianPoint(currPos))
             {
-                var pattern1 = board.Skip(y).Take(window);
-                var pattern2 = board.Skip(y + window).Take(window);
-                if (Enumerable.SequenceEqual(pattern1, pattern2))
-                {
-                    prePatternHeight = y - 1;
-                    goto DONE;
-                };
+                hit = true;
+                maxHeight = maxY;
+                break;
             }
 
-            window++;
+            if (velocity.X == 0 && currPos.X < target.Left)
+                break;
+
+            if (velocity.Y < 0 && currPos.Y < target.Bottom)
+                break;
+
+            ApplyVelocity(ref currPos, ref velocity);
+            maxY = Math.Max(maxY, currPos.Y);
         }
 
-        DONE:
-        var startPattern = heightMap.SkipWhile(_ => _.Value < prePatternHeight).First();
-        var startPatternRound = startPattern.Key;
-        var endPatternRound = heightMap.Where(_ => _.Value == heightMap[startPatternRound] + window).Last().Key - startPatternRound;
-
-        long p1 = 1000000000000 - startPatternRound;
-        long p2q = p1 / endPatternRound;
-        int p2r = (int)(p1 % endPatternRound);
-        int p3 = heightMap[startPatternRound + p2r] - prePatternHeight;
-        return prePatternHeight + p2q * window + p3;
+        return new LauncherResult(hit, maxHeight);
     }
 
-    void PlayGame(List<int> board, Dictionary<int, int> heightMap)
+    static void ApplyVelocity(ref Point position, ref Point velocity)
     {
-        int top = 1;
-        int currentJet = 0;
+        position += velocity;
+        UpdateVelocity(ref velocity);
+    }
 
-        for (int round = 0; round < 4000; ++round)
+    static void UpdateVelocity(ref Point velocity)
+    {
+        velocity = velocity with
         {
-            var piece = Pieces[round % 5];
-            var y = top + 3;
-
-            while (true)
+            X = velocity.X switch
             {
-                if (this.input[currentJet++ % this.input.Length] == '<')
-                {
-                    var left = ShiftLeft(piece);
-                    if (!IsCollision(board, left, y))
-                        piece = left;
-                }
-                else
-                {
-                    var right = ShiftRight(piece);
-                    if (!IsCollision(board, right, y))
-                        piece = right;
-                }
-
-                if (IsCollision(board, piece, y - 1))
-                {
-                    var setPiece = SetPiece(piece);
-                    for (int i = setPiece.Length - 1; i >= 0; --i)
-                    {
-                        var index = y + (setPiece.Length - i) - 1;
-                        if (index >= board.Count)
-                        {
-                            board.Add(setPiece[i]);
-                        }
-                        else
-                        {
-                            board[index] |= setPiece[i];
-                        }
-                    }
-
-                    break;
-                }
-
-                y--;
-            }
-
-            top = board.Count;
-
-            heightMap[round + 1] = top - 1;
-        }
-    }
-
-    static bool IsCollision(List<int> board, int[] piece, int y)
-    {
-        for (int i = 0; i < piece.Length; ++i)
-        {
-            var p = piece[i];
-            var index = y + piece.Length - i - 1;
-            var line = board.Count > index ? board[index] : Wall;
-            if ((line ^ p) != (line | p))
-                return true;
-        }
-
-        return false;
-    }
-
-    static int[] SetPiece(int[] piece)
-    {
-        var line = new int[piece.Length];
-        for (int i = 0; i < piece.Length; ++i)
-            line[i] = Wall | piece[i];
-
-        return line;
-    }
-
-    static int[] ShiftLeft(int[] piece)
-    {
-        var newPiece = new int[piece.Length];
-        for (int i = 0; i < piece.Length; ++i)
-        {
-            newPiece[i] = piece[i] << 1;
-        }
-
-        return newPiece;
-    }
-
-    static int[] ShiftRight(int[] piece)
-    {
-        var newPiece = new int[piece.Length];
-        for (int i = 0; i < piece.Length; ++i)
-        {
-            newPiece[i] = piece[i] >> 1;
-        }
-
-        return newPiece;
+                > 0 => velocity.X - 1,
+                < 0 => velocity.X + 1,
+                0 => velocity.X,
+            },
+            Y = velocity.Y - 1,
+        };
     }
 }
