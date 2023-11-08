@@ -11,26 +11,24 @@ public readonly record struct Point
     public int X { get; init; }
     public int Y { get; init; }
 
-    public static Point operator +(Point p1, Point p2)
-        => new(p1.X + p2.X, p1.Y + p2.Y);
+    public static Point operator +(Point p1, Point p2) =>
+        new(p1.X + p2.X, p1.Y + p2.Y);
 
-    public static Point operator -(Point p1, Point p2)
-        => new(p1.X - p2.X, p1.Y - p2.Y);
+    public static Point operator -(Point p1, Point p2) =>
+        new(p1.X - p2.X, p1.Y - p2.Y);
 
-    public static Point operator *(Point p1, Point p2)
-        => new(p1.X * p2.X, p1.Y * p2.Y);
+    public static Point operator *(Point p1, Point p2) =>
+        new(p1.X * p2.X, p1.Y * p2.Y);
 
-    public static Point operator /(Point p1, Point p2)
-        => new(p1.X / p2.X, p1.Y / p2.Y);
+    public static Point operator /(Point p1, Point p2) =>
+        new(p1.X / p2.X, p1.Y / p2.Y);
 
-    public static implicit operator (int, int)(Point p) 
-        => (p.X, p.Y);
+    public static implicit operator (int, int)(Point p) => (p.X, p.Y);
 
-    public static implicit operator Point((int, int) p)
-      => new(p.Item1, p.Item2);
+    public static implicit operator Point((int, int) p) => new(p.Item1, p.Item2);
 
-    public static int ManhattanDistance(Point p1, Point p2)
-        => Math.Abs(p1.X - p2.X) + Math.Abs(p1.Y - p2.Y);
+    public static int ManhattanDistance(Point p1, Point p2) =>
+        Math.Abs(p1.X - p2.X) + Math.Abs(p1.Y - p2.Y);
 
     public void Deconstruct(out int x, out int y)
     {

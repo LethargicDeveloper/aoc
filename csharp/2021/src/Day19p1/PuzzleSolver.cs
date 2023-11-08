@@ -1,10 +1,21 @@
 ﻿using BenchmarkDotNet.Attributes;
+using static MoreLinq.Extensions.ForEachExtension;
 using System.Text.RegularExpressions;
 
 [MemoryDiagnoser]
 public partial class PuzzleSolver
 {
-    const int Geode = 3;
+    static readonly List<Point3D> Rotations = new()
+    {
+        (0, 0, 0),
+        (1, 0, 0),
+        (1, 1, 0),
+        (1, 0, 1),
+        (1, 1, 1),
+        (0, 1, 0),
+        (0, 1, 1),
+        (0, 0, 1)
+    };
 
     readonly string input;
 
@@ -16,241 +27,117 @@ public partial class PuzzleSolver
     [Benchmark]
     public long Solve()
     {
-        var factory = Factory.Create(input);
-        return factory.CalculateTotalQualityLevel();
+        var beacons = input
+            .SplitEmptyLines()
+            .Select(_ => _.SplitLines())
+            .Select(Parse)
+            .ToDictionary(k => k.Id, v => v.Beacons);
+
+        var world = new Dictionary<int, HashSet<Point3D>>
+        {
+            [0] = beacons[0] 
+        };
+
+        var queue = new Queue<KeyValuePair<int, HashSet<Point3D>>>();
+        beacons.Where(_ => _.Key > 0).ForEach(queue.Enqueue);
+
+        while(queue.TryDequeue(out var sensor))
+        {
+            if (Overlaps(sensor.Value, world, out var reorientedSensor))
+            {
+                world[sensor.Key] = reorientedSensor;
+                continue;
+            }
+
+            queue.Enqueue(sensor);
+        }
+
+        return 0;
     }
 
-    partial class Factory
+    static bool Overlaps(HashSet<Point3D> beacons, Dictionary<int, HashSet<Point3D>> world, out HashSet<Point3D> reorientedBeacons)
     {
-        readonly List<Blueprint> blueprints = new();
-
-        private Factory(List<Blueprint> blueprints)
+        foreach (var sensor in world)
         {
-            this.blueprints = blueprints;
-        }
-
-        public static Factory Create(string input)
-        {
-            var blueprints = ParseBlueprints(input);
-            return new Factory(blueprints);
-        }
-
-        public long CalculateTotalQualityLevel()
-        {
-            return blueprints
-                .Select((b, i) => (i + 1) * CalculateQualityLevel(b, 24))
-                .Sum();
-        }
-
-        static float Score(State state) => ((state.TimeRemaining * state.Robots[Geode]) + state.Resources[Geode]);
-
-        static float BestPossibleScore(State state) => Score(state) + ((state.TimeRemaining - 1) * state.TimeRemaining) / 2;
-
-        static long CalculateQualityLevel(Blueprint blueprint, int timeRemaining)
-        {
-            var initialState = new State(timeRemaining);
-            var queue = new Queue<State>();
-            queue.Enqueue(initialState);
-
-            State maxState = new(timeRemaining);
-            HashSet<State> seen = new();
-            while (queue.TryDequeue(out var state))
+            for (int facing = 0; facing < 3; ++facing)
             {
-                if (state.Resources[Geode] > maxState.Resources[Geode])
+                var facingBeacons = beacons.Select(b =>
                 {
-                    maxState = state;
-                }
+                    if (facing == 1)
+                        return new(b.Z, b.X, b.Y);
 
-                if (state.TimeRemaining <= 0) continue;
+                    if (facing == 2)
+                        return new(b.Y, b.Z, b.X);
+                        
+                    return b;
+                }).ToHashSet();
 
-                foreach (var robot in blueprint)
+                foreach (var (rotx, roty, rotz) in Rotations)
                 {
-                    var wait = (int)state.Resources
-                        .Select((v, i) => robot.Value[i] switch
-                        {
-                            var c when c == 0 => 0,
-                            var c when c <= state.Resources[i] => 1,
-                            _ when state.Robots[i] == 0 => int.MaxValue,
-                            var c => Math.Ceiling((c - state.Resources[i]) / (double)state.Robots[i]) + 1
-                        }).Max();
-
-                    if (wait == int.MaxValue) continue;
-                    if (wait >= state.TimeRemaining)
+                    for (int deg = 0; deg <= 3; ++deg)
                     {
-                        var finalState = new State
+                        var rotatedBeacons = facingBeacons.Select(b =>
                         {
-                            TimeRemaining = state.TimeRemaining,
-                            Resources = state.Resources.ToArray(),
-                            Robots = state.Robots.ToArray()
-                        };
+                            b = b.RotateX(Point3D.Zero, 90 * deg * rotx);
+                            b = b.RotateY(Point3D.Zero, 90 * deg * roty);
+                            b = b.RotateZ(Point3D.Zero, 90 * deg * rotz);
+                            return b;
+                        }).ToHashSet();
 
-                        var r = CollectResources(finalState, state.TimeRemaining);
-                        finalState = new State
+                        foreach (var worldBeacon in sensor.Value)
                         {
-                            TimeRemaining = 0,
-                            Resources = r,
-                            Robots = state.Robots.ToArray()
-                        };
-
-                        if (BestPossibleScore(state) < Score(maxState)) continue;
-
-                        if (seen.Add(finalState))
-                            queue.Enqueue(finalState);
-                        continue;
+                            if (TryReorientToPoint(rotatedBeacons, sensor.Value, worldBeacon, out reorientedBeacons))
+                            {
+                                return true;
+                            }
+                        }
                     }
-
-                    if (BestPossibleScore(state) < Score(maxState)) continue;
-
-                    var resources = CollectResources(state, wait);
-                    var newState = BuyRobot(robot.Key, state, resources, blueprint);
-                    newState.TimeRemaining -= wait;
-
-                    if (seen.Add(newState))
-                        queue.Enqueue(newState);
                 }
             }
-
-            return maxState.Resources[Geode];
         }
 
-        static State BuyRobot(int robot, State state, int[] resources, Blueprint blueprint)
-        {
-            var newRobots = state.Robots.ToArray();
-            var newResources = resources.ToArray();
-
-            newRobots[robot]++;
-            var bp = blueprint[robot];
-            for (int i = 0; i < resources.Length; ++i)
-            {
-                newResources[i] -= bp[i];
-            }
-
-            return new State
-            {
-                Resources = newResources,
-                Robots = newRobots,
-                TimeRemaining = state.TimeRemaining
-            };
-        }
-
-        static int[] CollectResources(State state, int wait)
-        {
-            var resources = state.Resources.ToArray();
-
-            for (int i = 0; i < state.Robots.Length; ++i)
-            {
-                resources[i] += (state.Robots[i] * wait);
-            }
-
-            return resources;
-        }
-
-        static List<Blueprint> ParseBlueprints(string input)
-        {
-            var blueprints = new List<Blueprint>();
-
-            var lines = input.SplitLines();
-            foreach (var line in lines)
-            {
-                var blueprint = new Blueprint();
-
-                var instructions = line
-                    .Split(':')[1]
-                    .Split('.', StringSplitOptions.RemoveEmptyEntries)
-                    .Select(_ => _.TrimEnd('.'));
-
-                foreach (var instruction in instructions)
-                {
-                    var match = BlueprintRegex().Match(instruction);
-                    var robot = match.Groups["robot"].Value;
-                    var costsDict = match.Groups["cost"].Value
-                        .Split(" and ")
-                        .Select(_ => _.Split(' ') switch
-                        {
-                            var c => (int.Parse(c[0]), c[1])
-                        }).ToDictionary(k => k.Item2, v => v.Item1);
-
-                    var costs = new[]
-                    {
-                        costsDict.TryGetValue("ore", out int ore) ? ore : 0,
-                        costsDict.TryGetValue("clay", out int clay) ? clay : 0,
-                        costsDict.TryGetValue("obsidian", out int obsidian) ? obsidian : 0,
-                        costsDict.TryGetValue("geode", out int geode) ? geode : 0,
-                    };
-
-                    var index = robot switch
-                    {
-                        "ore" => 0,
-                        "clay" => 1,
-                        "obsidian" => 2,
-                        "geode" => 3,
-                        _ => throw new Exception("Invalid robot!")
-                    };
-
-                    blueprint[index] = costs;
-                }
-
-                blueprints.Add(blueprint);
-            }
-
-            return blueprints;
-        }
-
-        class State : IEquatable<State?>
-        {
-            public State() { }
-
-            public State(int timeRemaining)
-            {
-                this.TimeRemaining = timeRemaining;
-            }
-
-            public int TimeRemaining { get; set; }
-
-            public int[] Resources = new[] { 0, 0, 0, 0 };
-
-            public int[] Robots = new[] { 1, 0, 0, 0 };
-
-            public override bool Equals(object? obj)
-            {
-                return Equals(obj as State);
-            }
-
-            public bool Equals(State? other)
-            {
-                return other is not null &&
-                       TimeRemaining == other.TimeRemaining &&
-                       Resources.SequenceEqual(other.Resources) &&
-                       Robots.SequenceEqual(other.Robots);
-            }
-
-            public override int GetHashCode()
-            {
-                var hash = new HashCode();
-                hash.Add(TimeRemaining);
-                for (int i = 0; i < Resources.Length; ++i)
-                {
-                    hash.Add(Robots[i]);
-                    hash.Add(Resources[i]);
-                }
-
-                return hash.ToHashCode();
-            }
-
-            public static bool operator ==(State? left, State? right)
-            {
-                return EqualityComparer<State>.Default.Equals(left, right);
-            }
-
-            public static bool operator !=(State? left, State? right)
-            {
-                return !(left == right);
-            }
-        }
-
-        [GeneratedRegex("(?<robot>ore|clay|obsidian|geode|) robot costs (?<cost>.*)")]
-        private static partial Regex BlueprintRegex();
+        reorientedBeacons = new();
+        return false;
     }
 
-    class Blueprint : Dictionary<int, int[]> { }
+    static bool TryReorientToPoint(
+        HashSet<Point3D> beacons,
+        HashSet<Point3D> worldbeacons,
+        Point3D point, 
+        out HashSet<Point3D> reorientedBeacons)
+    {
+        foreach (var beacon in beacons)
+        {
+            var delta = beacon.Delta(point);
+            reorientedBeacons = beacons.Select(_ => _ + delta).ToHashSet();
+            if (reorientedBeacons.Where(worldbeacons.Contains).Count() >= 12)
+            {
+                // TODO: not finding matches
+                return true;
+            }
+        }
+
+        reorientedBeacons = new();
+        return false;
+    }
+
+    static (int Id, HashSet<Point3D> Beacons) Parse(string[] input)
+    {
+        var scanner = int.Parse(ScannerRegex().Match(input.First()).Value);
+        var beacons = input
+            .Skip(1)
+            .Select(_ => _.Split(",") switch
+            {
+                var x => new Point3D
+                (
+                    int.Parse(x[0]),
+                    int.Parse(x[1]),
+                    int.Parse(x[2])
+                )
+            }).ToHashSet();
+        return (scanner, beacons);
+    }
+
+    [GeneratedRegex("\\d+")]
+    private static partial Regex ScannerRegex();
 }
