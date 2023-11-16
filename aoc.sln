@@ -5,7 +5,12 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AocLib", "src\AocLib\AocLib.csproj", "{E7F51147-4759-44F6-BF69-63C8B23A78CF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdventOfCode", "src\AdventOfCode\AdventOfCode.csproj", "{E15C9810-E7C2-4665-B8AB-BC06FF2A0F32}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdventOfCode", "src\AdventOfCode\AdventOfCode.csproj", "{E15C9810-E7C2-4665-B8AB-BC06FF2A0F32}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{8019971C-4D4F-439F-B62F-D452CFE5F999}"
+	ProjectSection(SolutionItems) = preProject
+		Add-Year.ps1 = Add-Year.ps1
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
