@@ -1,8 +1,5 @@
 ﻿using AdventOfCode.Abstractions;
 using AocLib;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis;
-using System.Reflection;
 using System.Text.RegularExpressions;
 
 namespace AdventOfCode._2022.Day21;
@@ -17,46 +14,20 @@ public partial class Part01 : PuzzleSolver<long>
 
     public override long Solve()
     {
-        var functions = this.input
-             .SplitLines()
-             .Select(_ => $"public long {_.Replace(":", "() {")} }}")
-             .Select(_ => MathRegex().Replace(_, m =>
-                 $"return {m.Groups[1].Value}() {m.Groups[2].Value} {m.Groups[3].Value}();"))
-             .Select(_ => NumberRegex().Replace(_, m =>
-                 $"return {m.Groups[1].Value};"));
-
-        var @class = """
-            public class Solver {
-            %%func%%
-            }
-            """.Replace("%%func%%", string.Join(Environment.NewLine, functions));
-
-        var syntaxTree = CSharpSyntaxTree.ParseText(@class);
-        var references = new[] {
-              MetadataReference.CreateFromFile(typeof(Binder).GetTypeInfo().Assembly.Location),
-              MetadataReference.CreateFromFile(typeof(ValueTuple<>).GetTypeInfo().Assembly.Location)
-        };
-        var options = new CSharpCompilationOptions(
-            OutputKind.DynamicallyLinkedLibrary,
-            optimizationLevel: OptimizationLevel.Debug);
-        var compliation = CSharpCompilation.Create(
-            "InMemoryAssembly",
-            references: references,
-            options: options).AddSyntaxTrees(syntaxTree);
-
-        using var stream = new MemoryStream();
-        var emitResult = compliation.Emit(stream);
-
-        long result = 0;
-        if (emitResult.Success)
+        var builder = new CodeBuilder();
+        
+        foreach (var line in this.input.SplitLines())
         {
-            stream.Seek(0, SeekOrigin.Begin);
-            var assembly = Assembly.Load(stream.ToArray());
-            var type = assembly.GetType("Solver")!;
-            var solver = Activator.CreateInstance(type);
-            result = (long)type.InvokeMember("root", BindingFlags.Default | BindingFlags.InvokeMethod, null, solver, null)!;
+            var index = line.IndexOf(":");
+            var name = line[..index];
+
+            var outer = line[(index + 2)..];
+            var body = MathRegex().Replace(outer, m => $"return {m.Groups[1].Value}() {m.Groups[2].Value} {m.Groups[3].Value}();");
+            body = NumberRegex().Replace(body, m => $"return {m.Groups[1].Value};");
+
+            builder.AddFunction(name, body, "long");
         }
 
-        return result;
+        return (long)builder.Build().root();
     }
 }
