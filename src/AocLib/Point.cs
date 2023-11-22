@@ -13,7 +13,7 @@ public readonly record struct Point
 
     public static Point operator +(Point p1, Point p2) =>
         new(p1.X + p2.X, p1.Y + p2.Y);
-
+        
     public static Point operator -(Point p1, Point p2) =>
         new(p1.X - p2.X, p1.Y - p2.Y);
 
@@ -30,20 +30,20 @@ public readonly record struct Point
     public static int ManhattanDistance(Point p1, Point p2) =>
         Math.Abs(p1.X - p2.X) + Math.Abs(p1.Y - p2.Y);
 
+    public int ManhattanDistance(Point p)
+        => ManhattanDistance(this, p);
+
     public void Deconstruct(out int x, out int y)
     {
         x = this.X;
         y = this.Y;
     }
 
-    public int ManhattanDistance(Point p)
-        => ManhattanDistance(this, p);
-
     public Point MoveToward(Point p)
         => (X + Math.Sign(p.X - X), Y + Math.Sign(p.Y - Y));
 
-    public Point Up() => (X, Y - 1);
-    public Point Down() => (X, Y + 1);
-    public Point Left() => (X - 1, Y);
-    public Point Right() => (X + 1, Y);
+    public Point MoveUp() => (X, Y - 1);
+    public Point MoveDown() => (X, Y + 1);
+    public Point MoveLeft() => (X - 1, Y);
+    public Point MoveRight() => (X + 1, Y);
 }

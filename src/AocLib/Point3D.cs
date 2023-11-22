@@ -1,6 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-
-namespace AocLib;
+﻿namespace AocLib;
 
 public readonly record struct Point3D
 {
@@ -41,12 +39,6 @@ public readonly record struct Point3D
         y = this.Y;
         z = this.Z;
     }
-
-    public Point3D Delta(Point3D point) =>
-        (this - point) switch
-        {
-            var (x, y, z) => (x * -1, y * -1, z * -1)
-        };
 
     public Point3D RotateX(Point3D center, int angle) =>
         RotateX(this, center, angle);
@@ -117,10 +109,10 @@ public readonly record struct Point3D
             (znew + center.Z));
     }
 
-    public Point3D Up() => (X, Y - 1, Z);
-    public Point3D Down() => (X, Y + 1, Z);
-    public Point3D Left() => (X - 1, Y, Z);
-    public Point3D Right() => (X + 1, Y, Z);
-    public Point3D Backward() => (X, Y, Z - 1);
-    public Point3D Forward() => (X, Y, Z + 1);
+    public Point3D MoveUp() => (X, Y - 1, Z);
+    public Point3D MoveDown() => (X, Y + 1, Z);
+    public Point3D MoveLeft() => (X - 1, Y, Z);
+    public Point3D MoveRight() => (X + 1, Y, Z);
+    public Point3D MoveBackward() => (X, Y, Z - 1);
+    public Point3D MoveForward() => (X, Y, Z + 1);
 }

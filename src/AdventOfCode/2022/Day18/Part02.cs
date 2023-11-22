@@ -17,12 +17,12 @@ public partial class Part02 : PuzzleSolver<long>
     static Point3D[] GetNeighbors(Point3D point) =>
         new Point3D[]
         {
-            point.Right(),
-            point.Left(),
-            point.Down(),
-            point.Up(),
-            point.Forward(),
-            point.Backward()
+            point.MoveRight(),
+            point.MoveLeft(),
+            point.MoveDown(),
+            point.MoveUp(),
+            point.MoveForward(),
+            point.MoveBackward()
         };
 
     static MinMax GetMinMaxRanges(HashSet<Point3D> points)

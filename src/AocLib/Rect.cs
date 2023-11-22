@@ -1,6 +1,6 @@
 ﻿namespace AocLib;
 
-public struct Rect
+public readonly struct Rect
 {
     public int Left { get; init; }
     public int Right { get; init; }

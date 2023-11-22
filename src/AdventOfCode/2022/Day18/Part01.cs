@@ -16,12 +16,12 @@ public partial class Part01 : PuzzleSolver<long>
             var (x, y, z) = point;
             var adjacent = new Point3D[]
             {
-                point.Right(),
-                point.Left(),
-                point.Down(),
-                point.Up(),
-                point.Forward(),
-                point.Backward(),
+                point.MoveRight(),
+                point.MoveLeft(),
+                point.MoveDown(),
+                point.MoveUp(),
+                point.MoveForward(),
+                point.MoveBackward(),
             };
 
             var adjacentCount = seen.Where(adjacent.Contains).Count();

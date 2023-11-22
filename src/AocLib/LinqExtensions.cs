@@ -13,13 +13,12 @@ public static class LinqExtensions
     public static IEnumerable<IGrouping<T, T>> GroupBy<T>(this IEnumerable<T> list)
         => list.GroupBy(_ => _);
 
-
     public static IEnumerable<(int Index, T Value)> WithIndex<T>(this IEnumerable<T> list)
         => list.Select((v, i) => (i, v));
 
     public static T Product<T>(this IEnumerable<T> list)
-        where T : struct, INumber<T>
-        => list.Aggregate(T.One, (acc, cur) => acc * cur);
+        where T : IMultiplyOperators<T, T, T>, IMultiplicativeIdentity<T, T>
+        => list.Aggregate(T.MultiplicativeIdentity, (acc, cur) => acc * cur);
 
     public static IEnumerable<T> Flatten<T>(
             this IEnumerable<T> source,

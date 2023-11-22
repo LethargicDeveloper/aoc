@@ -23,10 +23,10 @@ public partial class Part02 : PuzzleSolver<long>
                 var headPos = knotPos[0];
                 knotPos[0] = dir switch
                 {
-                    "U" => headPos.Up(),
-                    "D" => headPos.Down(),
-                    "L" => headPos.Left(),
-                    _ => headPos.Right(),
+                    "U" => headPos.MoveUp(),
+                    "D" => headPos.MoveDown(),
+                    "L" => headPos.MoveLeft(),
+                    _ => headPos.MoveRight(),
                 };
 
                 for (int i = 1; i < knotPos.Length; ++i)
