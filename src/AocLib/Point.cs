@@ -1,4 +1,6 @@
-﻿namespace AocLib;
+﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+
+namespace AocLib;
 
 public readonly record struct Point
 {
@@ -32,6 +34,40 @@ public readonly record struct Point
 
     public int ManhattanDistance(Point p)
         => ManhattanDistance(this, p);
+
+    public bool IsOrthoganllyAdjacentTo(Point point)
+        => OrthogonalAdjacentPoints().Contains(point);
+
+    public bool IsDiagonallyAdjacentTo(Point point)
+        => DiagonalAdjacentPoints().Contains(point);
+
+    public bool IsAdjacentTo(Point point)
+        => IsOrthoganllyAdjacentTo(point) || IsDiagonallyAdjacentTo(point);
+
+    public IEnumerable<Point> AllAdjacentPoints()
+        => DiagonalAdjacentPoints().Concat(OrthogonalAdjacentPoints());
+
+    public IEnumerable<Point> DiagonalAdjacentPoints()
+    {
+        return new Point[]
+        {
+            (X - 1, Y - 1),
+            (X + 1, Y - 1),
+            (X - 1, Y + 1),
+            (X + 1, Y + 1)
+        };
+    }
+
+    public IEnumerable<Point> OrthogonalAdjacentPoints()
+    {
+        return new Point[]
+        {
+            (X - 1, Y),
+            (X + 1, Y),
+            (X, Y - 1),
+            (X, Y + 1)
+        };
+    }
 
     public void Deconstruct(out int x, out int y)
     {
