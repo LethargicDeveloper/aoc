@@ -44,7 +44,7 @@ public readonly record struct Point
     public bool IsAdjacentTo(Point point)
         => IsOrthoganllyAdjacentTo(point) || IsDiagonallyAdjacentTo(point);
 
-    public IEnumerable<Point> AllAdjacentPoints()
+    public IEnumerable<Point> AdjacentPoints()
         => DiagonalAdjacentPoints().Concat(OrthogonalAdjacentPoints());
 
     public IEnumerable<Point> DiagonalAdjacentPoints()
