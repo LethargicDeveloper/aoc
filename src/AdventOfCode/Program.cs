@@ -10,11 +10,6 @@
  *  
  */
 
-var sample = new AdventOfCode._2023.Day05.Part02();
-sample.Solve("sample").Log();
-
-Console.ReadLine();
-
 var puzzle = new AdventOfCode._2023.Day05.Part02();
 puzzle.Solve().Log();
 
