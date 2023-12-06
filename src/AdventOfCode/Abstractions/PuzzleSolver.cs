@@ -5,7 +5,9 @@ namespace AdventOfCode.Abstractions;
 [MemoryDiagnoser]
 public class PuzzleSolver<T> : IPuzzleSolver<T>
 {
-    protected readonly string input;
+    protected string input => internalInput;
+    readonly string path;
+    string internalInput;
 
     public PuzzleSolver()
     {
@@ -13,16 +15,24 @@ public class PuzzleSolver<T> : IPuzzleSolver<T>
         var year = parts[1][1..];
         var day = parts[2];
         var part = parts[3].Replace("Part", string.Empty);
-        var path = $@".\{year}\{day}\{part}.txt";
+        path = $@".\{year}\{day}";
+        var filename = $@"{path}\{part}.txt";
 
         if (!File.Exists(path))
         {
-            path = $@".\{year}\{day}\01.txt";
+            filename = $@"{path}\01.txt";
         }
 
-        input = File.ReadAllText(path);
+        internalInput = File.ReadAllText(filename);
     }
 
     [Benchmark]
     public virtual T? Solve() => default;
+
+    public T? Solve(string filename)
+    {
+        internalInput = File.ReadAllText($@"{path}\{filename}.txt");
+
+        return Solve();
+    }
 }
