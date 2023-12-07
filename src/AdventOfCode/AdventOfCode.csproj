@@ -93,7 +93,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AocLib\AocLib.csproj" />
-    <ProjectReference Include="..\AoCSharpLib\AoCSharpLib.csproj" />
   </ItemGroup>
 
   <ItemGroup>
