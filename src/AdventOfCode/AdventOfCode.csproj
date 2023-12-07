@@ -8,7 +8,84 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="benchmarkdotnet" Version="0.13.10" />
+    <Compile Remove="2022\**" />
+    <Compile Remove="2023\Day02\**" />
+    <Compile Remove="2023\Day03\**" />
+    <Compile Remove="2023\Day04\**" />
+    <Compile Remove="2023\Day05\**" />
+    <Compile Remove="2023\Day06\**" />
+    <Compile Remove="2023\Day07\**" />
+    <Compile Remove="2023\Day08\**" />
+    <Compile Remove="2023\Day09\**" />
+    <Compile Remove="2023\Day10\**" />
+    <Compile Remove="2023\Day11\**" />
+    <Compile Remove="2023\Day12\**" />
+    <Compile Remove="2023\Day13\**" />
+    <Compile Remove="2023\Day14\**" />
+    <Compile Remove="2023\Day15\**" />
+    <Compile Remove="2023\Day16\**" />
+    <Compile Remove="2023\Day17\**" />
+    <Compile Remove="2023\Day18\**" />
+    <Compile Remove="2023\Day19\**" />
+    <Compile Remove="2023\Day20\**" />
+    <Compile Remove="2023\Day21\**" />
+    <Compile Remove="2023\Day22\**" />
+    <Compile Remove="2023\Day23\**" />
+    <Compile Remove="2023\Day24\**" />
+    <Compile Remove="2023\Day25\**" />
+    <EmbeddedResource Remove="2022\**" />
+    <EmbeddedResource Remove="2023\Day02\**" />
+    <EmbeddedResource Remove="2023\Day03\**" />
+    <EmbeddedResource Remove="2023\Day04\**" />
+    <EmbeddedResource Remove="2023\Day05\**" />
+    <EmbeddedResource Remove="2023\Day06\**" />
+    <EmbeddedResource Remove="2023\Day07\**" />
+    <EmbeddedResource Remove="2023\Day08\**" />
+    <EmbeddedResource Remove="2023\Day09\**" />
+    <EmbeddedResource Remove="2023\Day10\**" />
+    <EmbeddedResource Remove="2023\Day11\**" />
+    <EmbeddedResource Remove="2023\Day12\**" />
+    <EmbeddedResource Remove="2023\Day13\**" />
+    <EmbeddedResource Remove="2023\Day14\**" />
+    <EmbeddedResource Remove="2023\Day15\**" />
+    <EmbeddedResource Remove="2023\Day16\**" />
+    <EmbeddedResource Remove="2023\Day17\**" />
+    <EmbeddedResource Remove="2023\Day18\**" />
+    <EmbeddedResource Remove="2023\Day19\**" />
+    <EmbeddedResource Remove="2023\Day20\**" />
+    <EmbeddedResource Remove="2023\Day21\**" />
+    <EmbeddedResource Remove="2023\Day22\**" />
+    <EmbeddedResource Remove="2023\Day23\**" />
+    <EmbeddedResource Remove="2023\Day24\**" />
+    <EmbeddedResource Remove="2023\Day25\**" />
+    <None Remove="2022\**" />
+    <None Remove="2023\Day02\**" />
+    <None Remove="2023\Day03\**" />
+    <None Remove="2023\Day04\**" />
+    <None Remove="2023\Day05\**" />
+    <None Remove="2023\Day06\**" />
+    <None Remove="2023\Day07\**" />
+    <None Remove="2023\Day08\**" />
+    <None Remove="2023\Day09\**" />
+    <None Remove="2023\Day10\**" />
+    <None Remove="2023\Day11\**" />
+    <None Remove="2023\Day12\**" />
+    <None Remove="2023\Day13\**" />
+    <None Remove="2023\Day14\**" />
+    <None Remove="2023\Day15\**" />
+    <None Remove="2023\Day16\**" />
+    <None Remove="2023\Day17\**" />
+    <None Remove="2023\Day18\**" />
+    <None Remove="2023\Day19\**" />
+    <None Remove="2023\Day20\**" />
+    <None Remove="2023\Day21\**" />
+    <None Remove="2023\Day22\**" />
+    <None Remove="2023\Day23\**" />
+    <None Remove="2023\Day24\**" />
+    <None Remove="2023\Day25\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="morelinq" Version="4.0.0" />
     <PackageReference Include="OptimizedPriorityQueue" Version="5.1.0" />
     <PackageReference Include="QuikGraph" Version="2.5.0" />
@@ -16,109 +93,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AocLib\AocLib.csproj" />
+    <ProjectReference Include="..\AoCSharpLib\AoCSharpLib.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="2022\Day01\01.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="2022\Day02\01.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="2022\Day03\01.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="2022\Day05\01.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="2022\Day04\01.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="2022\Day25\01.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="2022\Day24\01.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="2022\Day23\01.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="2022\Day22\01.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="2022\Day21\01.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="2022\Day20\01.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="2022\Day19\01.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="2022\Day18\01.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="2022\Day17\01.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="2022\Day16\01.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="2022\Day15\01.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="2022\Day14\01.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="2022\Day13\01.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="2022\Day12\01.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="2022\Day11\01.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="2022\Day10\01.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="2022\Day09\01.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="2022\Day08\01.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="2022\Day07\01.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="2022\Day06\01.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="2023\Day01\01.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="2023\Day02\01.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="2023\Day03\01.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="2023\Day04\01.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="2023\Day05\sample.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="2023\Day05\01.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="2023\Day06\01.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="2023\Day07\sample.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="2023\Day07\01.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
