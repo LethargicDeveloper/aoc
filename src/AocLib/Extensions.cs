@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using static QuikGraph.Algorithms.Assignment.HungarianAlgorithm;
 
 namespace AocLib;
 
