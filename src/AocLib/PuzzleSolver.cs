@@ -1,9 +1,9 @@
 ﻿using BenchmarkDotNet.Attributes;
 
-namespace AdventOfCode.Abstractions;
+namespace AocLib;
 
 [MemoryDiagnoser]
-public class PuzzleSolver<T> : IPuzzleSolver<T>
+public class PuzzleSolver<T>
 {
     protected string input => internalInput;
     readonly string path;
