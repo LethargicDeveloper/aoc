@@ -1,6 +1,4 @@
-﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
-
-namespace AocLib;
+﻿namespace AocLib;
 
 public static class MathEx
 {
