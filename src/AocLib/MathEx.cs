@@ -22,13 +22,5 @@ public static class MathEx
 public static class NumericExtensions
 {
     public static long LCM(this long[] longs)
-    {
-        long acc = longs[0];
-        for (int i = 1; i < longs.Length; ++i)
-        {
-            acc = MathEx.LCM(acc, longs[i]);
-        }
-
-        return acc;
-    }
+        => longs.Aggregate(MathEx.LCM);
 }
