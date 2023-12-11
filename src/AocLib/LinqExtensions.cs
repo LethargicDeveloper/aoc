@@ -12,6 +12,10 @@ public static class LinqExtensions
         where T : IMultiplyOperators<T, T, T>, IMultiplicativeIdentity<T, T>
         => list.Aggregate(T.MultiplicativeIdentity, (acc, cur) => acc * cur);
 
+    public static T Subtract<T>(this IEnumerable<T> list)
+        where T : INumber<T>
+        => list.Aggregate((acc, cur) => acc - cur);
+
     public static IEnumerable<T> Loop<T>(this IEnumerable<T> list)
     {
         while (true)

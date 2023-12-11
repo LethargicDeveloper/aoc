@@ -10,7 +10,7 @@
  *  
  */
 
-var puzzle = new AdventOfCode._2023.Day08.Part02();
+var puzzle = new AdventOfCode._2023.Day10.Part02();
 puzzle.Solve().Log();
 
 // BenchmarkDotNet.Running.BenchmarkRunner.Run<AdventOfCode._2023.Day06.Part02>();

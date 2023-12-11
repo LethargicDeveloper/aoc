@@ -18,6 +18,13 @@ public static class Extensions
         return r < T.Zero ? r + mod : r;
     }
 
+    public static Point ToPointFromIndex<T>(this T[][] list, int index)
+    {
+        int x = index % list[0].Length;
+        int y = index / list[0].Length;
+        return (x, y);
+    }
+
     public static CustomIntEnumerator GetEnumerator(this Range range)
         => new(range);
 
