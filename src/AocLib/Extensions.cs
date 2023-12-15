@@ -1,5 +1,5 @@
-﻿using System.Numerics;
-using static QuikGraph.Algorithms.Assignment.HungarianAlgorithm;
+﻿using System.Collections;
+using System.Numerics;
 
 namespace AocLib;
 
@@ -34,6 +34,33 @@ public static class Extensions
         {
             yield return i;
         }
+    }
+
+    public static long ComputeHash(this char[][] arr)
+    {
+        long hash = 389;
+
+        for (int y = 0; y < arr.Length; y++)
+            for (int x = 0; x < arr[0].Length; x++)
+                hash += HashCode.Combine(hash, arr[y][x]);
+
+        return hash;
+    }
+
+    public static string ReplaceCharAt(this string input, int index, char newChar)
+    {
+        ArgumentNullException.ThrowIfNull(input);
+
+        char[] chars = input.ToCharArray();
+        chars[index] = newChar;
+        return new string(chars);
+    }
+
+    public static T[] Rot<T>(this T[] arr, int rot)
+    {
+        var start = arr[^rot..];
+        var end = arr[..^rot];
+        return [..start, ..end];
     }
 }
 

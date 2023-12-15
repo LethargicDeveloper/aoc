@@ -13,6 +13,7 @@ public static class MathEx
             b = a % b;
             a = temp;
         }
+
         return a;
     }
 }

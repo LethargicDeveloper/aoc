@@ -1,5 +1,4 @@
-﻿using AdventOfCode.Abstractions;
-using AocLib;
+﻿using AocLib;
 
 namespace AdventOfCode._2022.Day14;
 
