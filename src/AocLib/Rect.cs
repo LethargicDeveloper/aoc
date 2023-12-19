@@ -1,11 +1,11 @@
 ﻿namespace AocLib;
 
-public readonly struct Rect
+public class Rect
 {
-    public int Left { get; init; }
-    public int Right { get; init; }
-    public int Top { get; init; }
-    public int Bottom { get; init; }
+    public long Left { get; init; }
+    public long Right { get; init; }
+    public long Top { get; init; }
+    public long Bottom { get; init; }
 
     public bool ContainsScreenPoint(Point point)
         => point.X >= Left && point.X <= Right && point.Y >= Top && point.Y <= Bottom;
