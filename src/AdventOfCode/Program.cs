@@ -10,7 +10,7 @@
  *  
  */
 
-var puzzle = new AdventOfCode._2023.Day19.Part02();
+var puzzle = new AdventOfCode._2023.Day19.Part01();
 puzzle.Solve().Log();
 
 #if !DEBUG
