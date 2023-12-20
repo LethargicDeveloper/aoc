@@ -11,7 +11,7 @@
  */
 
 var puzzle = new AdventOfCode._2023.Day13.Part02();
-puzzle.Solve("sample").Log();
+puzzle.Solve().Log();
 
 #if !DEBUG
 BenchmarkDotNet.Running.BenchmarkRunner.Run<AdventOfCode._2023.Day11.Part02>();
