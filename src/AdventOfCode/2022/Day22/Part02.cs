@@ -217,7 +217,7 @@ public partial class Part02 : PuzzleSolver<long>
             if (rot == '\0') return facing;
 
             facing += rot == 'R' ? 1 : -1;
-            return facing.Mod(4);
+            return MathEx.Mod(facing, 4);
         }
 
         (Point, int) GetStartingPos()

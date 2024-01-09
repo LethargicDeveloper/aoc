@@ -156,7 +156,7 @@ public partial class Part01 : PuzzleSolver<long>
 
             if (facing == Right || facing == Left)
             {
-                var x = (newPos.X - minX).Mod(maxX - minX + 1) + minX;
+                var x = MathEx.Mod((newPos.X - minX), (maxX - minX + 1)) + minX;
                 return (map[newPos.Y][x].token == '#')
                     ? (pos, GetNextFacing(facing, rot))
                     : (new Point(x, newPos.Y), facing);
@@ -164,7 +164,7 @@ public partial class Part01 : PuzzleSolver<long>
 
             if (facing == Up || facing == Down)
             {
-                var y = (newPos.Y - minY).Mod(maxY - minY + 1) + minY;
+                var y = MathEx.Mod((newPos.Y - minY), (maxY - minY + 1)) + minY;
                 return (map[y][newPos.X].token == '#')
                     ? (pos, GetNextFacing(facing, rot))
                     : (new Point(newPos.X, y), facing);
@@ -178,7 +178,7 @@ public partial class Part01 : PuzzleSolver<long>
             if (rot == '\0') return facing;
 
             facing += rot == 'R' ? 1 : -1;
-            return facing.Mod(4);
+            return MathEx.Mod(facing, 4);
         }
 
         Point GetStartingPos() => (map[0].Select(_ => _.token).ToList().FindIndex(_ => _ != ' '), 0);
