@@ -67,6 +67,12 @@ public readonly record struct Point
         };
     }
 
+    public bool InBounds(int xMin, int yMin, int xMax, int yMax)
+        => X >= xMin && Y >= xMin && X <= xMax && Y <= yMax;
+
+    public bool InBounds(Func<Point, bool> predicate)
+        => predicate(this);
+
     public void Deconstruct(out int x, out int y)
     {
         x = this.X;
@@ -81,8 +87,10 @@ public readonly record struct Point
     public Point MoveLeft() => (X - 1, Y);
     public Point MoveRight() => (X + 1, Y);
 
+
     public static Point Up => (0, -1);
     public static Point Down => (0, 1);
     public static Point Left => (-1, 0);
     public static Point Right => (1, 0);
+    public static Point Zero => (0, 0);
 }
