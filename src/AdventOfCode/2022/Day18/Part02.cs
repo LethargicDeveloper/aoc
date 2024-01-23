@@ -2,6 +2,8 @@
 
 namespace AdventOfCode._2022.Day18;
 
+// change to Z is up; instead of Y
+
 public partial class Part02 : PuzzleSolver<long>
 {
     record MinMax(int MinX, int MaxX, int MinY, int MaxY, int MinZ, int MaxZ);

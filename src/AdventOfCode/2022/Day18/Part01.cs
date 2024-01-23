@@ -2,6 +2,8 @@
 
 namespace AdventOfCode._2022.Day18;
 
+// change to Z is up; instead of Y
+
 public partial class Part01 : PuzzleSolver<long>
 {
     public override long Solve()

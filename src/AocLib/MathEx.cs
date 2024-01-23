@@ -4,6 +4,14 @@ namespace AocLib;
 
 public static class MathEx
 {
+    public static T Max<T>(params T[] values)
+        where T : struct, INumber<T>
+        => (values ?? []).Aggregate((acc, cur) => acc > cur ? acc : cur);
+
+    public static T Min<T>(params T[] values)
+        where T : struct, INumber<T>
+        => (values ?? []).Aggregate((acc, cur) => acc < cur ? acc : cur);
+
     public static T LCM<T>(T a, T b)
         where T : struct, INumber<T>
         => (a / GCF(a, b)) * b;
@@ -50,6 +58,6 @@ public static class MathEx
 
 public static class NumericExtensions
 {
-    public static long LCM(this long[] longs)
+    public static long LCM(this IEnumerable<long> longs)
         => longs.Aggregate(MathEx.LCM);
 }

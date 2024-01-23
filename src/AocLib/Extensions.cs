@@ -1,4 +1,7 @@
-﻿namespace AocLib;
+﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.Diagnostics.Tracing.Parsers.JScript;
+
+namespace AocLib;
 
 public static class Extensions
 {
@@ -52,6 +55,18 @@ public static class Extensions
         var start = arr[^rot..];
         var end = arr[..^rot];
         return [..start, ..end];
+    }
+
+    public static void AddRange<T>(this HashSet<T> hash, IEnumerable<T> range)
+    {
+        foreach (var r in range)
+            _ = hash.Add(r);
+    }
+
+    public static void EnqueueRange<T>(this Queue<T> queue, IEnumerable<T> range)
+    {
+        foreach (var r in range)
+            queue.Enqueue(r);
     }
 }
 

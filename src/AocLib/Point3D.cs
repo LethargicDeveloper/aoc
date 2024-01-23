@@ -15,6 +15,15 @@ public readonly record struct Point3D
     public int Y { get; init; }
     public int Z { get; init; }
     
+    public static Point3D Parse(string point)
+    {
+        var parts = point.Split(',');
+        return new Point3D(
+            int.Parse(parts[0]),
+            int.Parse(parts[1]),
+            int.Parse(parts[2]));
+    }
+
     public static Point3D operator +(Point3D p1, Point3D p2) =>
         new(p1.X + p2.X, p1.Y + p2.Y, p1.Z + p2.Z);
 
@@ -26,6 +35,9 @@ public readonly record struct Point3D
 
     public static implicit operator Point3D((int X, int Y, int Z) p) =>
         new(p.X, p.Y, p.Z);
+
+    public static implicit operator Point(Point3D point3D)
+        => new(point3D.X, point3D.Y);
 
     public void Deconstruct(out int x, out int y)
     {

@@ -67,8 +67,11 @@ public readonly record struct Point
         };
     }
 
+    public bool InBounds(int min, int max)
+        => InBounds(min, min, max, max);
+
     public bool InBounds(int xMin, int yMin, int xMax, int yMax)
-        => X >= xMin && Y >= xMin && X <= xMax && Y <= yMax;
+        => X >= xMin && Y >= yMin && X <= xMax && Y <= yMax;
 
     public bool InBounds(Func<Point, bool> predicate)
         => predicate(this);
