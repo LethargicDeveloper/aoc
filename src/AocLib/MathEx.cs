@@ -54,6 +54,9 @@ public static class MathEx
     public static T TriangularNumber<T>(T n)
         where T : struct, INumber<T>
         => ((n * n) + n) / (T.One + T.One);
+
+    public static bool Approximately(float n1, float n2, float epsilon = 0.001f)
+        => MathF.Abs(n1 - n2) < epsilon;
 }
 
 public static class NumericExtensions

@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="MathNet.Numerics" Version="5.0.0" />
     <PackageReference Include="morelinq" Version="4.1.0" />
     <PackageReference Include="OptimizedPriorityQueue" Version="5.1.0" />
     <PackageReference Include="QuikGraph" Version="2.5.0" />
@@ -119,6 +120,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="2023\Day23\01.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="2023\Day24\01.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="2023\Day24\sample.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="2023\Day25\01.txt">
