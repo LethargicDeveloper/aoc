@@ -11,6 +11,3 @@
  */
 
 PuzzleRunner<AdventOfCode._2023.Day01.Part01>.Solve();
-
-//var puzzle = new AdventOfCode._2023.Day24.Part02();
-//puzzle.Solve();
