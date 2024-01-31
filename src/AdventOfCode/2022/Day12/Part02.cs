@@ -15,7 +15,7 @@ public partial class Part02 : PuzzleSolver<long>
         return list;
     }
 
-    public override long Solve()
+    protected override long InternalSolve()
     {
         var map = this.input
             .SplitLines()

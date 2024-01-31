@@ -62,7 +62,7 @@ public partial class Part02 : PuzzleSolver<long>
         return area;
     }
 
-    public override long Solve()
+    protected override long InternalSolve()
     {
         var points = this.input
             .SplitLines()

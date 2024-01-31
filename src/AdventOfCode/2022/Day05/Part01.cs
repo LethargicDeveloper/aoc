@@ -4,7 +4,7 @@ namespace AdventOfCode._2022.Day05;
 
 public partial class Part01 : PuzzleSolver<string>
 {
-    public override string Solve()
+    protected override string InternalSolve()
     {
         var (stacks, moves) = input
             .SplitEmptyLines(_ =>
@@ -17,7 +17,7 @@ public partial class Part01 : PuzzleSolver<string>
             stacks[m[1] - 1].PopRange(m[0])
         ));
 
-        return stacks.Select(_ => _.Pop()).CreateString();
+        return stacks.Select(_ => _.Pop()).AsString();
 
     }
 }

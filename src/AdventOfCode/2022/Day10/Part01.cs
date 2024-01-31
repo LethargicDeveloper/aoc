@@ -6,7 +6,7 @@ public partial class Part01 : PuzzleSolver<long>
 {
     static long SignalStrength(long x, long cycles) => x * cycles;
 
-    public override long Solve()
+    protected override long InternalSolve()
     {
         long x = 1;
         long cycles = 1;

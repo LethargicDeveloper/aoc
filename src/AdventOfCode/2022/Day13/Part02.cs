@@ -6,7 +6,7 @@ namespace AdventOfCode._2022.Day13;
 
 public partial class Part02 : PuzzleSolver<long>
 {
-    public override long Solve()
+    protected override long InternalSolve()
     {
         var packetInput = this.input
              .SplitEmptyLines()

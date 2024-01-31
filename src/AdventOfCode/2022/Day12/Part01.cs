@@ -5,7 +5,7 @@ namespace AdventOfCode._2022.Day12;
 
 public partial class Part01 : PuzzleSolver<long>
 {
-    public override long Solve()
+    protected override long InternalSolve()
     {
         var map = this.input
             .SplitLines()

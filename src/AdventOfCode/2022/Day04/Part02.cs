@@ -8,7 +8,7 @@ public partial class Part02 : PuzzleSolver<long>
     [GeneratedRegex(@"\d+", RegexOptions.Compiled, "en-US")]
     private static partial Regex RangeRegex();
 
-    public override long Solve() => this.input
+    protected override long InternalSolve() => this.input
         .SplitLines()
         .Select(_ => RangeRegex().Matches(_)
             .Select(m => int.Parse(m.Value))

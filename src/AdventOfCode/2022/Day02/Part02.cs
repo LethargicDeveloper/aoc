@@ -4,7 +4,7 @@ namespace AdventOfCode._2022.Day02;
 
 public class Part02 : PuzzleSolver<long>
 {
-    public override long Solve() => this.input
+    protected override long InternalSolve() => this.input
         .SplitLines()
         .Select(_ => new[] { _[0] - '@', _[2] - 'W' })
         .Select(_ => _[1] switch

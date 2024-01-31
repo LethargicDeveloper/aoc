@@ -4,7 +4,7 @@ namespace AdventOfCode._2022.Day09;
 
 public partial class Part02 : PuzzleSolver<long>
 {
-    public override long Solve()
+    protected override long InternalSolve()
     {
         var cmds = input
             .SplitLines()

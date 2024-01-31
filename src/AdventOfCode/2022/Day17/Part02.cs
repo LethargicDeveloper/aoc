@@ -93,7 +93,7 @@ public partial class Part02 : PuzzleSolver<long>
         return prePatternHeight + p2q * window + p3;
     }
 
-    public override long Solve()
+    protected override long InternalSolve()
     {
         var board = new List<int>() { Floor };
         var heightMap = new Dictionary<int, int>();

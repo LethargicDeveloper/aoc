@@ -7,7 +7,7 @@ public partial class Part02 : PuzzleSolver<long>
 {
     const int Geode = 3;
 
-    public override long Solve()
+    protected override long InternalSolve()
     {
         var factory = Factory.Create(input);
         return factory.CalculateTop3QualityLevel();

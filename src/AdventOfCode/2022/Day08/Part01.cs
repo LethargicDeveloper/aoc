@@ -18,7 +18,7 @@ public partial class Part01 : PuzzleSolver<long>
         return isVisibleTop || isVisibleBottom || isVisibleLeft || isVisibleRight;
     }
 
-    public override long Solve()
+    protected override long InternalSolve()
     {
         var forest = input
             .SplitLines()

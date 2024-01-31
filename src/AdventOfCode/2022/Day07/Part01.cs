@@ -4,7 +4,7 @@ namespace AdventOfCode._2022.Day07;
 
 public partial class Part01 : PuzzleSolver<long>
 {
-    public override long Solve() => ParseFileSystem()
+    protected override long InternalSolve() => ParseFileSystem()
         .Select(_ => _.TotalSize)
         .Where(size => size <= 100000)
         .Sum();

@@ -4,7 +4,7 @@ namespace AdventOfCode._2022.Day07;
 
 public partial class Part02 : PuzzleSolver<long>
 {
-    public override long Solve()
+    protected override long InternalSolve()
     {
         var fs = ParseFileSystem();
         var unused = 70000000 - fs.First(_ => _.Name == "/").TotalSize;

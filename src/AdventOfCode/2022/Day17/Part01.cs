@@ -60,7 +60,7 @@ public partial class Part01 : PuzzleSolver<long>
         return line;
     }
 
-    public override long Solve()
+    protected override long InternalSolve()
     {
         var board = new List<int>() { Floor };
         var heightMap = new Dictionary<int, int>();

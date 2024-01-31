@@ -6,7 +6,7 @@ public partial class Part01 : PuzzleSolver<long>
 {
     static int CalcYMax(char[][] grid) => grid.Select((_, i) => (i, v: Array.IndexOf(_, '#'))).Last(_ => _.v != -1).i + 1;
 
-    public override long Solve()
+    protected override long InternalSolve()
     {
         var grid = ParseInput();
 

@@ -37,7 +37,7 @@ public partial class Part02 : PuzzleSolver<long>
         return new MinMax(minX, maxX, minY, maxY, minZ, maxZ);
     }
 
-    public override long Solve()
+    protected override long InternalSolve()
     {
         var points = GetPoints();
 

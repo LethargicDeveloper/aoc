@@ -11,7 +11,7 @@ public partial class Part01 : PuzzleSolver<long>
     [GeneratedRegex("(\\d+)")]
     private static partial Regex NumberRegex();
 
-    public override long Solve()
+    protected override long InternalSolve()
     {
         var builder = new CodeBuilder();
         

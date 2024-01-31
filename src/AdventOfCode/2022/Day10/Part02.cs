@@ -13,7 +13,7 @@ public partial class Part02 : PuzzleSolver<string>
         if (x == 39) crt.AppendLine();
     }
 
-    public override string Solve()
+    protected override string InternalSolve()
     {
         var cmds = input
             .SplitLines()

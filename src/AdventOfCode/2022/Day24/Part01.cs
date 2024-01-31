@@ -4,7 +4,7 @@ namespace AdventOfCode._2022.Day24;
 
 public partial class Part01 : PuzzleSolver<long>
 {
-    public override long Solve() =>
+    protected override long InternalSolve() =>
         new BlizzardBasin(this.input).ShortestPath();
 
     class BlizzardBasin

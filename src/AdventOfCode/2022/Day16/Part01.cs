@@ -81,7 +81,7 @@ public partial class Part01 : PuzzleSolver<long>
 
     DelegateVertexAndEdgeListGraph<Valve, EquatableEdge<Valve>> graph = null!;
 
-    public override long Solve()
+    protected override long InternalSolve()
     {
         this.graph = CreateGraph(ParseInput());
 

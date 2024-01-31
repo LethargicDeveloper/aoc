@@ -1,17 +1,7 @@
-﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.Diagnostics.Tracing.Parsers.JScript;
-
-namespace AocLib;
+﻿namespace AocLib;
 
 public static class Extensions
 {
-    public static void Log(this object obj)
-        => Console.WriteLine(obj);
-
-    public static string CreateString(this IEnumerable<char> list)
-        => new(list.ToArray());
-
-
     public static Point ToPointFromIndex<T>(this T[][] list, int index)
     {
         int x = index % list[0].Length;

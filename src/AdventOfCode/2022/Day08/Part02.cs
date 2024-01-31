@@ -25,7 +25,7 @@ public partial class Part02 : PuzzleSolver<long>
         return top * bottom * left * right;
     }
 
-    public override long Solve()
+    protected override long InternalSolve()
     {
         var forest = input
             .SplitLines()

@@ -8,7 +8,7 @@ public partial class Part02 : PuzzleSolver<long>
     [GeneratedRegex("(\\d+)(.)?")]
     private static partial Regex NumberRegex();
 
-    public override long Solve()
+    protected override long InternalSolve()
     {
         var (cube, cmds) = ParseCube();
         var monkeyCube = new MonkeyMapCube(cube, cmds);

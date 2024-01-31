@@ -4,7 +4,7 @@ namespace AdventOfCode._2022.Day23;
 
 public partial class Part01 : PuzzleSolver<long>
 {
-    public override long Solve() =>
+    protected override long InternalSolve() =>
         new ElfMover(input, rounds: 10).GetEmptyRegions();
 
     class ElfMover
