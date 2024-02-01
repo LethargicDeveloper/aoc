@@ -40,8 +40,11 @@ For ($i = 1; $i -le 25; $i++) {
   $itemGroup.AppendChild($content)
 
   For ($part = 1; $part -le 2; $part++) {
-    if ($i -lt 25) {
-      $code = @"
+    if ($i -eq 25 -and $part -eq 2) {
+        break
+    }
+
+    $code = @"
 using AocLib;
 
 namespace _$year.$day;
@@ -54,8 +57,7 @@ public class Part0$part : PuzzleSolver<long>
     }
 }
 "@
-      $code | Out-File "$dayDir\Part0$part.cs"
-    }
+    $code | Out-File "$dayDir\Part0$part.cs"
   }
 }
 
