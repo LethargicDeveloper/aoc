@@ -10,4 +10,4 @@
  *  
  */
 
-PuzzleRunner<AdventOfCode._2023.Day01.Part01>.Solve();
+PuzzleRunner<AdventOfCode._2023.Day14.Part02>.Solve();

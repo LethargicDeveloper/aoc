@@ -52,12 +52,6 @@ public static class Extensions
         foreach (var r in range)
             _ = hash.Add(r);
     }
-
-    public static void EnqueueRange<T>(this Queue<T> queue, IEnumerable<T> range)
-    {
-        foreach (var r in range)
-            queue.Enqueue(r);
-    }
 }
 
 public struct CustomIntEnumerator

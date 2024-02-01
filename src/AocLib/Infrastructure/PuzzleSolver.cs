@@ -24,7 +24,6 @@ public class PuzzleSolver<T> : IPuzzleSolver
         var name = (type.BaseType) == typeof(PuzzleSolver<T>)
             ? type.FullName : type.BaseType!.FullName;
 
-        Console.WriteLine($"TYPE: {name}");
         var parts = name?.Split(".")!;
         var year = parts[1][1..];
         var day = parts[2];
