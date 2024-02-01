@@ -1,45 +1,65 @@
 param([string]$year)
 
-$sln = "$PSScriptRoot\src\AdventOfCode"
-$yearDir = "$sln\$year"
+$src = "$PSScriptRoot\src"
+$yearDir = "$src\_$year"
 
 New-Item -Path $yearDir -ItemType Directory
+
+& dotnet new console -n "_$year" -o $yearDir
+& dotnet add "$yearDir\_$year.csproj" reference "$src\AocLib\AocLib.csproj"
+
+$program = @"
+using AocLib;
+
+PuzzleRunner<_$year.Day01.Part01>.Solve();
+"@
+
+$program | Out-File "$yearDir\Program.cs"
+$csproj = [XML](Get-Content -Path "$yearDir\_$year.csproj")
+$itemGroup = $csproj.CreateElement("ItemGroup")
 
 For ($i = 1; $i -le 25; $i++) {
   $day = "Day$($i.ToString('00'))"
   $dayDir = "$yearDir\$day"
   New-Item -Path $dayDir -ItemType Directory
   New-Item -Path "$dayDir\01.txt" -ItemType File
-  
-  $code = @"
-using AdventOfCode.Abstractions;
+  New-Item -Path "$dayDir\sample.txt" -ItemType File
 
-namespace AdventOfCode._$year.$day;
+  $content = $csproj.CreateElement("None")
+  $content.SetAttribute("Update", "$day\01.txt")
+  $copyToOutputDir = $csproj.CreateElement("CopyToOutputDirectory")
+  $copyToOutputDir.InnerText = "PreserveNewest"
+  $content.AppendChild($copyToOutputDir)
+  $itemGroup.AppendChild($content)
 
-public class Part01 : PuzzleSolver<long>
+  $content = $csproj.CreateElement("None")
+  $content.SetAttribute("Update", "$day\sample.txt")
+  $copyToOutputDir = $csproj.CreateElement("CopyToOutputDirectory")
+  $copyToOutputDir.InnerText = "PreserveNewest"
+  $content.AppendChild($copyToOutputDir)
+  $itemGroup.AppendChild($content)
+
+  For ($part = 1; $part -le 2; $part++) {
+    if ($i -lt 25) {
+      $code = @"
+using AocLib;
+
+namespace _$year.$day;
+
+public class Part0$part : PuzzleSolver<long>
 {
-    public override long Solve()
+    protected override long InternalSolve()
     {
         return 0;
     }
 }
 "@
-
-  $code | Out-File "$dayDir\Part01.cs"
-
-  $code = @"
-using AdventOfCode.Abstractions;
-
-namespace AdventOfCode._$year.$day;
-
-public class Part02 : PuzzleSolver<long>
-{
-    public override long Solve()
-    {
-        return 0;
+      $code | Out-File "$dayDir\Part0$part.cs"
     }
+  }
 }
-"@
 
-  $code | Out-File "$dayDir\Part02.cs"
-}
+$csproj.DocumentElement.AppendChild($itemGroup)
+$csproj.Save("$yearDir\_$year.csproj")
+& dotnet sln add "$yearDir\_$year.csproj"
+

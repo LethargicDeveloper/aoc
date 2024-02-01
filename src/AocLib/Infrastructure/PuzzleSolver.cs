@@ -25,10 +25,9 @@ public class PuzzleSolver<T> : IPuzzleSolver
             ? type.FullName : type.BaseType!.FullName;
 
         var parts = name?.Split(".")!;
-        var year = parts[1][1..];
-        var day = parts[2];
-        var part = parts[3].Replace("Part", string.Empty);
-        path = $@".\{year}\{day}";
+        var day = parts[1];
+        var part = parts[2].Replace("Part", string.Empty);
+        path = $@".\{day}";
         var filename = $@"{path}\{part}.txt";
 
         if (!File.Exists(path))
