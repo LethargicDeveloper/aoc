@@ -13,8 +13,13 @@ public class PuzzleRunner<T>
 #endif
     }
 
-    public void Dispose()
+    public static void Solve(string filename)
     {
-        throw new NotImplementedException();
+#if !DEBUG
+        BenchmarkDotNet.Running.BenchmarkRunner.Run<T>();
+#else
+        var solver = (IPuzzleSolver)Activator.CreateInstance(typeof(T))!;
+        solver.Solve(filename);
+#endif
     }
 }

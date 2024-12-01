@@ -27,12 +27,12 @@ public class PuzzleSolver<T> : IPuzzleSolver
         var parts = name?.Split(".")!;
         var day = parts[1];
         var part = parts[2].Replace("Part", string.Empty);
-        path = $@".\{day}";
-        var filename = $@"{path}\{part}.txt";
+        path = $@"{day}";
+        var filename = $@"{path}/{part}.txt";
 
         if (!File.Exists(path))
         {
-            filename = $@"{path}\01.txt";
+            filename = $@"{path}/01.txt";
         }
 
         internalInput = File.ReadAllText(filename);
@@ -52,7 +52,7 @@ public class PuzzleSolver<T> : IPuzzleSolver
 
     public void Solve(string filename)
     {
-        internalInput = File.ReadAllText($@"{path}\{filename}.txt");
+        internalInput = File.ReadAllText($@"{path}/{filename}.txt");
         Solve();
     }
 }
