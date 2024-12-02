@@ -15,6 +15,9 @@ public static class LinqExtensions
 
     public static IOrderedEnumerable<T> OrderBy<T>(this IEnumerable<T> list)
         => list.OrderBy(_ => _);
+    
+    public static IOrderedEnumerable<T> OrderByDescending<T>(this IEnumerable<T> list)
+        => list.OrderByDescending(_ => _);
 
 
 
