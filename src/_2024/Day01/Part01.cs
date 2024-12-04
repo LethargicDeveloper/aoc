@@ -18,8 +18,8 @@ public class Part01 : PuzzleSolver<int>
         
         for (int i = 0, j = 0; i < input.Length; i += 14, j++)
         {
-            list[j] = FastParse(lines[i..(i + 5)]);
-            list[LINE_COUNT + j] = FastParse(lines[(i + 8)..(i + 13)]);
+            list[j] = lines[i..(i + 5)].AsInt();
+            list[LINE_COUNT + j] = lines[(i + 8)..(i + 13)].AsInt();
         }
         
         Array.Sort(list, 0, LINE_COUNT);
@@ -33,14 +33,5 @@ public class Part01 : PuzzleSolver<int>
         }
 
         return total;
-    }
-    
-    private static int FastParse(ReadOnlySpan<char> input)
-    {
-        return (input[0] - '0') * 10000 +
-               (input[1] - '0') * 1000 +
-               (input[2] - '0') * 100 +
-               (input[3] - '0') * 10 +
-               (input[4] - '0');
     }
 }

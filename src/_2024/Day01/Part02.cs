@@ -3,33 +3,34 @@ using AocLib;
 
 namespace _2024.Day01;
 
-public class Part02 : PuzzleSolver<long>
+public class Part02 : PuzzleSolver<int>
 {
-    protected override long InternalSolve()
+    private const int LINE_COUNT = 1000;
+    
+    protected override int InternalSolve()
     {
-        var (list1, list2) = input
-            .SplitLines()
-            .Select(x => x.Split("   "))
-            .Aggregate((List1: new List<long>(), List2: new List<long>()), (acc, cur) =>
-            {
-                acc.List1.Add(int.Parse(cur[0]));
-                acc.List2.Add(int.Parse(cur[1]));
-                return acc;
-            });
-
-        var scores = new Dictionary<long, long>();
-        foreach (var num in list1)
+        var lines = input.AsSpan();
+        
+        var list = new int[LINE_COUNT * 2];
+        var scores = new Dictionary<int, int>();
+        
+        for (int i = 0, j = 0; i < input.Length; i += 14, j++)
         {
-            if (scores.ContainsKey(num))
-                continue;
-
-            scores[num] = list2.Count(x => x == num) * num;
+            list[j] = lines[i..(i + 5)].AsInt();
+            list[LINE_COUNT + j] = lines[(i + 8)..(i + 13)].AsInt();
+        }
+        
+        for (int i = LINE_COUNT; i < LINE_COUNT * 2; i++)
+        {
+            scores[list[i]] = list[i] + scores.GetValueOrDefault(list[i], 0);
         }
 
-        var answer = list1
-            .Select(x => scores[x])
-            .Sum();
+        int count = 0;
+        for (int i = 0; i < LINE_COUNT; i++)
+        {
+            count += scores.GetValueOrDefault(list[i], 0);
+        }
         
-        return answer;
+        return count;
     }
 }

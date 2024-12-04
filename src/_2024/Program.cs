@@ -1,3 +1,3 @@
 using AocLib;
 
-PuzzleRunner<_2024.Day03.Part02>.Solve();
+PuzzleRunner<_2024.Day02.Part01>.Solve();
