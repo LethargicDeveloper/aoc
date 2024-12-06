@@ -89,11 +89,20 @@ public readonly record struct Point
     public Point MoveDown() => (X, Y + 1);
     public Point MoveLeft() => (X - 1, Y);
     public Point MoveRight() => (X + 1, Y);
-
+    
 
     public static Point Up => (0, -1);
     public static Point Down => (0, 1);
     public static Point Left => (-1, 0);
     public static Point Right => (1, 0);
     public static Point Zero => (0, 0);
+
+    public static Point RotateRight90(Point dir) => dir switch
+    {
+        (0, -1) => (1, 0),
+        (1, 0) => (0, 1),
+        (0, 1) => (-1, 0),
+        (-1, 0) => (0, -1),
+        _ => (0, 0)
+    };
 }
