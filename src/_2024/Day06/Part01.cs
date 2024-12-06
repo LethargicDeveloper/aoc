@@ -2,7 +2,6 @@ using AocLib;
 
 namespace _2024.Day06;
 
-// > 5550
 public class Part01 : PuzzleSolver<long>
 {
     protected override long InternalSolve()
