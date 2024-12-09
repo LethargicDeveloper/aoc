@@ -7,25 +7,15 @@ public class Part01 : PuzzleSolver<long>
 {
     protected override long InternalSolve()
     {
-        var partitionSizes = input
+        var diskMap = input
             .Select(char.GetNumericValue)
             .Select(Convert.ToInt32)
+            .Select((val, i) => string.Join("", (i % 2 == 0 ? $"{(char)((i / 2) + 100)}" : ".").Repeat(val)))
+            .SelectMany()
             .ToList();
-
-        var sb = new StringBuilder();
-        for (int i = 0; i < partitionSizes.Count; i++)
-        {
-            var id = (i / 2) + 100;
-            
-            sb.Append(string.Join(
-                string.Empty, 
-                (i % 2 == 0 ? $"{(char)id}" : ".").Repeat(partitionSizes[i])));
-        }
-        
-        var diskMap = sb.ToString().ToCharArray();
         
         int j = 0;
-        for (int i = diskMap.Length - 1; i > j; i--)
+        for (int i = diskMap.Count - 1; i > j; i--)
         {
             var id = diskMap[i];
             if (id == '.') continue;
