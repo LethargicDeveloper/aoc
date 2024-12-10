@@ -4,8 +4,58 @@ namespace _2024.Day10;
 
 public class Part02 : PuzzleSolver<long>
 {
+    private List<List<int>> map = [];
+    
     protected override long InternalSolve()
     {
-        return 0;
+        map = input
+            .SplitLines()
+            .Select(x => x
+                .Select(char.GetNumericValue)
+                .Select(Convert.ToInt32)
+                .ToList())
+            .ToList();
+
+        var startPositions = new List<Point>();
+        for (int y = 0; y < map.Count; y++)
+        for (int x = 0; x < map[0].Count; x++)
+        {
+            if (map[y][x] == 0)
+                startPositions.Add(new Point(x, y));
+        }
+
+        var totalScore = startPositions
+            .AsParallel()
+            .Select(TrailheadScore)
+            .Sum();
+        
+        return totalScore;
+    }
+
+    long TrailheadScore(Point point)
+    {
+        bool InBounds(Point p) => p.InBounds(0, 0, map[0].Count - 1, map.Count - 1);
+        
+        var queue = new Queue<Point>();
+        queue.Enqueue(point);
+
+        var end = new List<Point>();
+        while (queue.TryDequeue(out var pos))
+        {
+            var (x, y) = pos;
+            var val = map[y][x];
+
+            if (val == 9)
+            {
+                end.Add(point);
+                continue;
+            }
+            
+            foreach (var next in pos.OrthogonalAdjacentPoints())
+                if (InBounds(next) && map[next.Y][next.X] == val + 1)
+                    queue.Enqueue(next);
+        }
+        
+        return end.Count;
     }
 }
