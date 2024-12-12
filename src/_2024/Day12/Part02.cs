@@ -80,24 +80,3 @@ public class Part02 : PuzzleSolver<long>
         return price;
     }
 }
-
-// 9 * 4 = 36
-/*
-    OOOOO
-    OXOXO
-    OOOOO
-    OXOXO
-    OOOOO
-    
-    22122 0 0 4 1   5
-    2X2X2 0 0 3 0   3
-    12021 0 0 2 2   5
-    2X2X2 0 0 3 0   3
-    22122 0 0 4 1   5
-    
-    22223 0 1 4 0   5 
-    2XXXX 0 0 2 0   1
-    12223 0 1 3 1   5
-    2XXXX 0 0 1 0   1
-    22223 0 1 4 0   5
-*/
