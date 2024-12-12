@@ -31,6 +31,15 @@ public static class Extensions
         return hash;
     }
 
+    public static long ComputeHash<T>(this T[] arr)
+    {
+        var hashCode = new HashCode();
+        foreach (var item in arr)
+            hashCode.Add(item);
+        
+        return hashCode.ToHashCode();
+    }
+
     public static string ReplaceCharAt(this string input, int index, char newChar)
     {
         ArgumentNullException.ThrowIfNull(input);

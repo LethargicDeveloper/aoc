@@ -4,6 +4,23 @@ namespace AocLib;
 
 public static class MathEx
 {
+    public static long NumberOfDigits(this long number)
+    {
+        if (number == 0) 
+            return 1; 
+        
+        return (long)Math.Floor(Math.Log10(Math.Abs(number)) + 1);
+    }
+
+    public static (long part1, long part2) Split(this long number)
+    {
+        var mid = number.NumberOfDigits() / 2;
+        var divisor = (long)Math.Pow(10, mid);
+        var part1 = number / divisor;
+        var part2 = number % divisor;
+        return (part1, part2);
+    }
+    
     public static T Max<T>(params T[] values)
         where T : struct, INumber<T>
         => (values ?? []).Aggregate((acc, cur) => acc > cur ? acc : cur);
