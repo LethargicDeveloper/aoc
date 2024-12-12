@@ -27,6 +27,8 @@ public class Part01 : PuzzleSolver<long>
             diskMap[i] = '.';
         }
 
+        Console.WriteLine(string.Join(", ", diskMap.Select(x => x - 100)));
+
         var checksum = diskMap
             .TakeWhile(x => x != '.')
             .WithIndex()
