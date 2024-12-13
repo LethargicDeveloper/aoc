@@ -160,4 +160,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="MathNet.Numerics" />
+  </ItemGroup>
 </Project>

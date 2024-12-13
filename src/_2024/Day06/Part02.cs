@@ -42,7 +42,7 @@ public class Part02 : PuzzleSolver<long>
                 if (!nextPos.InBounds(0, 0, map[0].Count - 1, map.Count - 1))
                     break;
             
-                if (map[nextPos.Y][nextPos.X] == '#')
+                if (map[(int)nextPos.Y][(int)nextPos.X] == '#')
                     queue.Enqueue((curPos, Point.RotateRight90(dir)));
                 else
                 {

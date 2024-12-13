@@ -2,14 +2,14 @@
 
 public readonly record struct Point
 {
-    public Point(int x, int y)
+    public Point(long x, long y)
     {
         this.X = x;
         this.Y = y;
     }
 
-    public int X { get; init; }
-    public int Y { get; init; }
+    public long X { get; init; }
+    public long Y { get; init; }
 
     public static Point operator +(Point p1, Point p2) =>
         new(p1.X + p2.X, p1.Y + p2.Y);
@@ -23,14 +23,14 @@ public readonly record struct Point
     public static Point operator /(Point p1, Point p2) =>
         new(p1.X / p2.X, p1.Y / p2.Y);
 
-    public static implicit operator (int, int)(Point p) => (p.X, p.Y);
+    public static implicit operator (long, long)(Point p) => (p.X, p.Y);
 
-    public static implicit operator Point((int, int) p) => new(p.Item1, p.Item2);
+    public static implicit operator Point((long, long) p) => new(p.Item1, p.Item2);
 
-    public static int ManhattanDistance(Point p1, Point p2) =>
+    public static long ManhattanDistance(Point p1, Point p2) =>
         Math.Abs(p1.X - p2.X) + Math.Abs(p1.Y - p2.Y);
 
-    public int ManhattanDistance(Point p)
+    public long ManhattanDistance(Point p)
         => ManhattanDistance(this, p);
 
     public bool IsOrthoganllyAdjacentTo(Point point)
@@ -47,36 +47,36 @@ public readonly record struct Point
 
     public IEnumerable<Point> DiagonalAdjacentPoints()
     {
-        return new Point[]
-        {
+        return
+        [
             (X - 1, Y - 1),
             (X + 1, Y - 1),
             (X - 1, Y + 1),
             (X + 1, Y + 1)
-        };
+        ];
     }
 
     public IEnumerable<Point> OrthogonalAdjacentPoints()
     {
-        return new Point[]
-        {
+        return
+        [
             (X - 1, Y),
             (X + 1, Y),
             (X, Y - 1),
             (X, Y + 1)
-        };
+        ];
     }
 
-    public bool InBounds(int min, int max)
+    public bool InBounds(long min, long max)
         => InBounds(min, min, max, max);
 
-    public bool InBounds(int xMin, int yMin, int xMax, int yMax)
+    public bool InBounds(long xMin, long yMin, long xMax, long yMax)
         => X >= xMin && Y >= yMin && X <= xMax && Y <= yMax;
 
     public bool InBounds(Func<Point, bool> predicate)
         => predicate(this);
 
-    public void Deconstruct(out int x, out int y)
+    public void Deconstruct(out long x, out long y)
     {
         x = this.X;
         y = this.Y;

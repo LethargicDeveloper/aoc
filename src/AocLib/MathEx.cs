@@ -46,6 +46,13 @@ public static class MathEx
         return a;
     }
 
+    public static (long, long, long) ExtendedGCF(long a, long b)
+    {
+        if (a == 0) return (b, 0, 1);
+        var (gcd, x, y) = ExtendedGCF(b % a, a);
+        return (gcd, y - (b / a) * x, x);
+    }
+
     public static T Mod<T>(T num, T mod)
         where T : struct, INumber<T>
     {
@@ -72,12 +79,21 @@ public static class MathEx
         where T : struct, INumber<T>
         => ((n * n) + n) / (T.One + T.One);
 
-    public static bool Approximately(float n1, float n2, float epsilon = 0.001f)
+    public static bool Approximate(float n1, float n2, float epsilon = 0.001f)
         => MathF.Abs(n1 - n2) < epsilon;
+    
+    public static bool Approximate(double n1, double n2, double epsilon = 0.001d)
+        => Math.Abs(n1 - n2) < epsilon;
+    
+    public static bool Approximate(decimal n1, decimal n2, decimal epsilon = 0.001m)
+        => Math.Abs(n1 - n2) < epsilon;
 }
 
 public static class NumericExtensions
 {
     public static long LCM(this IEnumerable<long> longs)
         => longs.Aggregate(MathEx.LCM);
+    
+    public static long GCF(this IEnumerable<long> longs)
+        => longs.Aggregate(MathEx.GCF);
 }

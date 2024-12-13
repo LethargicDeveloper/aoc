@@ -43,7 +43,7 @@ public class Part02 : PuzzleSolver<long>
         while (queue.TryDequeue(out var pos))
         {
             var (x, y) = pos;
-            var val = map[y][x];
+            var val = map[(int)y][(int)x];
 
             if (val == 9)
             {
@@ -52,7 +52,7 @@ public class Part02 : PuzzleSolver<long>
             }
             
             foreach (var next in pos.OrthogonalAdjacentPoints())
-                if (InBounds(next) && map[next.Y][next.X] == val + 1)
+                if (InBounds(next) && map[(int)next.Y][(int)next.X] == val + 1)
                     queue.Enqueue(next);
         }
         
