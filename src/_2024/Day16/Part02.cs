@@ -17,15 +17,15 @@ public class Part02 : PuzzleSolver<long>
         
         var bestScore = long.MaxValue;
         var visited = new Dictionary<(Point pos, Point dir), long>();
-        var states = new Stack<(Point pos, Point dir, List<Point> path, long score)>();
+        var states = new Queue<(Point pos, Point dir, List<Point> path, long score)>();
 
         var initialPath = new List<Point>() { startPos };
-        states.Push((startPos, startDir, initialPath, 0));
+        states.Enqueue((startPos, startDir, initialPath, 0));
         visited[(startPos, startDir)] = 0;
         
         var bestPaths = new List<(List<Point> Path, long Score)>();
         
-        while (states.TryPop(out var state))
+        while (states.TryDequeue(out var state))
         {
             var (pos, dir, path, score) = state;
             
@@ -59,7 +59,7 @@ public class Part02 : PuzzleSolver<long>
                     newScore = score + 1;
                     if (!visited.TryGetValue((neighbor, dir), out prevScore) || newScore <= prevScore)
                     {
-                        states.Push((neighbor, dir, newPath, newScore));
+                        states.Enqueue((neighbor, dir, newPath, newScore));
                         visited[(neighbor, dir)] = newScore;
                     }
 
@@ -91,7 +91,7 @@ public class Part02 : PuzzleSolver<long>
                 newScore = score + 1 + (1000 * newDir.turn);
                 if (!visited.TryGetValue((neighbor, dir), out prevScore) || newScore <= prevScore)
                 {
-                    states.Push((neighbor, newDir.dir, newPath, newScore));
+                    states.Enqueue((neighbor, newDir.dir, newPath, newScore));
                     visited[(neighbor, newDir.dir)] = newScore;
                 }
             }
@@ -103,7 +103,7 @@ public class Part02 : PuzzleSolver<long>
             .ToHashSet()
             .ToList();
         
-        grid.Print(overlay: bestPlacesToSit);
+        //grid.Print(overlay: bestPlacesToSit);
         
         return bestPlacesToSit.Count;
     }
