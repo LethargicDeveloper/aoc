@@ -140,12 +140,12 @@ public partial class Part01 : PuzzleSolver<long>
 
         (Point, int) FindNextPos(Point pos, int facing, char rot)
         {
-            var (minX, maxX, minY, maxY, _) = map[pos.Y][pos.X];
+            var (minX, maxX, minY, maxY, _) = map[(int)pos.Y][(int)pos.X];
 
             var dir = dirMap[facing];
             var newPos = pos + dir;
 
-            map[pos.Y][pos.X].token = facing switch
+            map[(int)pos.Y][(int)pos.X].token = facing switch
             {
                 Right => '>',
                 Down => 'V',
@@ -157,7 +157,7 @@ public partial class Part01 : PuzzleSolver<long>
             if (facing == Right || facing == Left)
             {
                 var x = MathEx.Mod((newPos.X - minX), (maxX - minX + 1)) + minX;
-                return (map[newPos.Y][x].token == '#')
+                return (map[(int)newPos.Y][(int)x].token == '#')
                     ? (pos, GetNextFacing(facing, rot))
                     : (new Point(x, newPos.Y), facing);
             }
@@ -165,7 +165,7 @@ public partial class Part01 : PuzzleSolver<long>
             if (facing == Up || facing == Down)
             {
                 var y = MathEx.Mod((newPos.Y - minY), (maxY - minY + 1)) + minY;
-                return (map[y][newPos.X].token == '#')
+                return (map[(int)y][(int)newPos.X].token == '#')
                     ? (pos, GetNextFacing(facing, rot))
                     : (new Point(newPos.X, y), facing);
             }

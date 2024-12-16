@@ -8,7 +8,7 @@ public partial class Part02 : PuzzleSolver<long>
     [GeneratedRegex("-?\\d+")]
     private static partial Regex NumberRegex();
 
-    static Point FindBeacon(List<(Point Sensor, int Dist)> points, int max)
+    static Point FindBeacon(List<(Point Sensor, long Dist)> points, int max)
     {
         for (int y = 0; y < max; ++y)
         {
@@ -19,7 +19,7 @@ public partial class Part02 : PuzzleSolver<long>
                 var offset = Math.Abs(y - sensor.Y);
                 var startX = Math.Clamp((sensor.X - dist) + offset, 0, max);
                 var endX = Math.Clamp((sensor.X + dist) - offset, 0, max);
-                area.Add((startX, endX));
+                area.Add(((int)startX, (int)endX));
             }
 
             area.Sort();
@@ -53,7 +53,7 @@ public partial class Part02 : PuzzleSolver<long>
             var offset = Math.Abs(row - sensor.Y);
             var startX = (sensor.X - dist) + offset;
             var endX = (sensor.X + dist) - offset;
-            for (int x = startX; x < endX; ++x)
+            for (int x = (int)startX; x < endX; ++x)
             {
                 area.Add((x, row));
             }

@@ -46,7 +46,6 @@ public class Part02 : PuzzleSolver<double>
                  var dec = v - Math.Truncate(v);
                  return MathEx.Approximate(dec, 1) || MathEx.Approximate(dec, 0);
              })
-            //.Select(v => MathF.Round(v))
             .ToList();
         
         return s.Count < 2 ? 0 : 3.0 * s[0] + s[1];

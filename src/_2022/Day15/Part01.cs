@@ -18,7 +18,7 @@ public partial class Part01 : PuzzleSolver<long>
             var offset = Math.Abs(row - sensor.Y);
             var startX = (sensor.X - dist) + offset;
             var endX = (sensor.X + dist) - offset;
-            for (int x = startX; x < endX; ++x)
+            for (int x = (int)startX; x < endX; ++x)
             {
                 area.Add((x, row));
             }

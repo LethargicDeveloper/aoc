@@ -8,9 +8,9 @@ public partial class Part02 : PuzzleSolver<long>
     {
         var cmds = input
             .SplitLines()
-            .Select(_ => _.Split(" ") switch { var x => (dir: x[0], dist: int.Parse(x[1])) });
+            .Select(_ => _.Split(" ") switch { var x => (dir: x[0], dist: long.Parse(x[1])) });
 
-        var visited = new HashSet<(int, int)>();
+        var visited = new HashSet<(long, long)>();
         var knotPos = new Point[10];
         visited.Add(knotPos[^1]);
 

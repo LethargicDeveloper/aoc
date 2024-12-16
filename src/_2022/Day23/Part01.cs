@@ -50,8 +50,8 @@ public partial class Part01 : PuzzleSolver<long>
             var maxY = elves.Select(_ => _.Y).Max();
 
             var emptyCount = 0;
-            for (int y = minY; y <= maxY; ++y)
-                for (int x = minX; x <= maxX; ++x)
+            for (int y = (int)minY; y <= maxY; ++y)
+                for (int x = (int)minX; x <= maxX; ++x)
                 {
                     if (!elves.Contains((x, y)))
                         emptyCount++;

@@ -153,12 +153,12 @@ public partial class Part02 : PuzzleSolver<long>
             {
                 (newPos, newFace, newFacing) = face switch
                 {
-                    1 => ((0, pos.Y), 4, Right),
-                    2 => ((pos.Y, max), 6, Up),
-                    3 => ((0, pos.Y), 6, Right),
-                    4 => ((max, max - pos.Y), 6, Left),
-                    5 => ((pos.Y, max), 4, Up),
-                    6 => ((max, max - pos.Y), 4, Left),
+                    1 => ((0, (int)pos.Y), 4, Right),
+                    2 => (((int)pos.Y, max), 6, Up),
+                    3 => ((0, (int)pos.Y), 6, Right),
+                    4 => ((max, max - (int)pos.Y), 6, Left),
+                    5 => (((int)pos.Y, max), 4, Up),
+                    6 => ((max, max - (int)pos.Y), 4, Left),
                     _ => throw new Exception("Invalid face")
                 };
             }
@@ -167,12 +167,12 @@ public partial class Part02 : PuzzleSolver<long>
             {
                 (newPos, newFace, newFacing) = face switch
                 {
-                    1 => ((pos.X, 0), 5, Down),
-                    2 => ((pos.X, 0), 4, Down),
-                    3 => ((pos.X, 0), 2, Down),
-                    4 => ((max, pos.X), 5, Left),
-                    5 => ((pos.X, 0), 6, Down),
-                    6 => ((max, pos.X), 2, Left),
+                    1 => (((int)pos.X, 0), 5, Down),
+                    2 => (((int)pos.X, 0), 4, Down),
+                    3 => (((int)pos.X, 0), 2, Down),
+                    4 => ((max, (int)pos.X), 5, Left),
+                    5 => (((int)pos.X, 0), 6, Down),
+                    6 => ((max, (int)pos.X), 2, Left),
                     _ => throw new Exception("Invalid face")
                 };
             }
@@ -181,12 +181,12 @@ public partial class Part02 : PuzzleSolver<long>
             {
                 (newPos, newFace, newFacing) = face switch
                 {
-                    1 => ((0, max - pos.Y), 3, Right),
-                    2 => ((pos.Y, 0), 1, Down),
-                    3 => ((0, max - pos.Y), 1, Right),
-                    4 => ((max, pos.Y), 1, Left),
-                    5 => ((pos.Y, 0), 3, Down),
-                    6 => ((max, pos.Y), 3, Left),
+                    1 => ((0, max - (int)pos.Y), 3, Right),
+                    2 => (((int)pos.Y, 0), 1, Down),
+                    3 => ((0, max - (int)pos.Y), 1, Right),
+                    4 => ((max, (int)pos.Y), 1, Left),
+                    5 => (((int)pos.Y, 0), 3, Down),
+                    6 => ((max, (int)pos.Y), 3, Left),
                     _ => throw new Exception("Invalid face")
                 };
             }
@@ -195,12 +195,12 @@ public partial class Part02 : PuzzleSolver<long>
             {
                 (newPos, newFace, newFacing) = face switch
                 {
-                    1 => ((0, pos.X), 2, Right),
-                    2 => ((pos.X, max), 3, Up),
-                    3 => ((0, pos.X), 5, Right),
-                    4 => ((pos.X, max), 2, Up),
-                    5 => ((pos.X, max), 1, Up),
-                    6 => ((pos.X, max), 5, Up),
+                    1 => ((0, (int)pos.X), 2, Right),
+                    2 => (((int)pos.X, max), 3, Up),
+                    3 => ((0, (int)pos.X), 5, Right),
+                    4 => (((int)pos.X, max), 2, Up),
+                    5 => (((int)pos.X, max), 1, Up),
+                    6 => (((int)pos.X, max), 5, Up),
                     _ => throw new Exception("Invalid face")
                 };
             }

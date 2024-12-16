@@ -108,7 +108,7 @@ public partial class Part02 : PuzzleSolver<long>
                         .Select(pos => pos + state.Pos)
                         .Where(pos => !newBlizzardPos.Select(b => b.Pos).Contains(pos))
                         .Where(pos => pos == endPos || pos.X >= 1 && pos.X <= map.Width - 1 && pos.Y >= 1 && pos.Y <= map.Height - 1)
-                        .Where(pos => map[pos.Y][pos.X] != '#')
+                        .Where(pos => map[(int)pos.Y][(int)pos.X] != '#')
                         .ToList();
 
                     if (!newBlizzardPos.Any(_ => _.Pos == state.Pos))

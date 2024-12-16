@@ -1,7 +1,42 @@
-﻿namespace AocLib;
+﻿using System.Text;
+
+namespace AocLib;
 
 public static class Extensions
 {
+    public static Point FindPosition<T>(this T[][] list, T value)
+    {
+        for (int y = 0; y < list.Length; y++)
+        for (int x = 0; x < list[0].Length; x++)
+        {
+            if (list[y][x]?.Equals(value) ?? false)
+                return new Point(x, y);
+        }
+
+        throw new KeyNotFoundException();
+    }
+
+    public static void Print(this char[][] list, bool clear = true, bool pause = false)
+    {
+        if (clear) Console.Clear();
+        
+        var sb = new StringBuilder();
+
+        for (int y = 0; y < list.Length; y++)
+        {
+            for (int x = 0; x < list[0].Length; x++)
+            {
+                Console.Write(list[y][x]);
+            }
+            
+            Console.WriteLine();
+        }
+        
+        Console.Write(sb);
+
+        if (pause) Console.ReadLine();
+    }
+    
     public static Point ToPointFromIndex<T>(this T[][] list, int index)
     {
         int x = index % list[0].Length;
