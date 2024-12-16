@@ -15,9 +15,13 @@ public static class Extensions
 
         throw new KeyNotFoundException();
     }
+    
+    public static T At<T>(this T[][] grid, Point pos) => grid[pos.Y][pos.X];
 
-    public static void Print(this char[][] list, bool clear = true, bool pause = false)
+    public static void Print(this char[][] list, bool clear = true, bool pause = false, List<Point>? overlay = null)
     {
+        var over = overlay ?? [];
+        
         if (clear) Console.Clear();
         
         var sb = new StringBuilder();
@@ -26,7 +30,17 @@ public static class Extensions
         {
             for (int x = 0; x < list[0].Length; x++)
             {
-                Console.Write(list[y][x]);
+                if (over.Contains((x, y)))
+                {
+                    var color = Console.ForegroundColor;
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.Write('@');
+                    Console.ForegroundColor = color;
+                }
+                else
+                {
+                    Console.Write(list[y][x]);
+                }
             }
             
             Console.WriteLine();
@@ -64,6 +78,15 @@ public static class Extensions
                 hash += HashCode.Combine(hash, arr[y][x]);
 
         return hash;
+    }
+    
+    public static long ComputeHash<T>(this List<T> arr)
+    {
+        var hashCode = new HashCode();
+        foreach (var item in arr)
+            hashCode.Add(item);
+        
+        return hashCode.ToHashCode();
     }
 
     public static long ComputeHash<T>(this T[] arr)

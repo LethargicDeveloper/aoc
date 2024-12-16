@@ -93,13 +93,57 @@ public readonly record struct Point
     public Point MoveLeft() => (X - 1, Y);
     public Point MoveRight() => (X + 1, Y);
     
-
     public static Point Up => (0, -1);
     public static Point Down => (0, 1);
     public static Point Left => (-1, 0);
     public static Point Right => (1, 0);
     public static Point Zero => (0, 0);
 
+    public static Point TurnLeft(Point facing) => facing switch
+    {
+        (0, -1) => (-1, 0),
+        (-1, 0) => (0, 1),
+        (0, 1) => (1, 0),
+        (1, 0) => (0, -1),
+        _ => (0, 0)
+    };
+    
+    public static Point TurnRight(Point facing) => facing switch
+    {
+        (0, -1) => (1, 0),
+        (1, 0) => (0, 1),
+        (0, 1) => (-1, 0),
+        (-1, 0) => (0, -1),
+        _ => (0, 0)
+    };
+    
+    // public Point TurnToward(Point facing, Point dest)
+    // {
+    //     if (facing == (0, 0))
+    //         return facing;
+    //     
+    //     var dx = X - dest.X;
+    //     var dy = Y - dest.Y;
+    //
+    //     int ndx = 0, ndy = 0;
+    //     if (Math.Abs(dx) > Math.Abs(dy))
+    //         ndx = dx > 0 ? 1 : -1;
+    //     else
+    //         ndy = dy > 0 ? -1 : 1;
+    //
+    //     var dirs = new[] { Down,  Right, Up, Left };
+    //
+    //     int ix = Array.IndexOf(dirs, facing);
+    //     int newIx = Array.IndexOf(dirs, (ndx, ndy));
+    //
+    //     int clockwise = (newIx - ix + 4) % 4;
+    //     int counterClockwise = (ix - newIx + 4) % 4;
+    //
+    //     //return clockwise <= counterClockwise ? dirs[newIx] : dirs[ix];
+    //     return clockwise <= counterClockwise ? dirs[newIx] : dirs[(ix - counterClockwise + 4) % 4];
+    // }
+    
+    [Obsolete]
     public static Point RotateRight90(Point dir) => dir switch
     {
         (0, -1) => (1, 0),
