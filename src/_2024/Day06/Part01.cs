@@ -26,7 +26,7 @@ public class Part01 : PuzzleSolver<long>
                 break;
             
             if (map[(int)nextPos.Y][(int)nextPos.X] == '#')
-                queue.Enqueue((curPos, Point.RotateRight90(dir)));
+                queue.Enqueue((curPos, Point.TurnRight90(dir)));
             else
             {
                 visited.Add(nextPos);

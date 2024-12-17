@@ -8,17 +8,13 @@ public class Part01 : PuzzleSolver<long>
     {
         var data = input.SplitEmptyLines();
         
-        var grid = data[0]
-            .SplitLines()
-            .Select(s => s.ToCharArray())
-            .ToArray();
-
+        var grid = data[0].ToCharGrid();
         var cmds = data[1]
             .SplitLines()
             .SelectMany()
             .ToArray();
 
-        var pos = grid.FindPosition('@');
+        var pos = grid.Find('@');
 
         foreach (var cmd in cmds)
         {
@@ -35,36 +31,36 @@ public class Part01 : PuzzleSolver<long>
                 _ => throw new Exception($"Invalid direction {cmd}")
             };
             
-            while (grid[checkPos.Y][checkPos.X] != '#')
+            while (grid.At(checkPos) != '#')
             {
                 checkPos += dir;
                 moveCount++;
 
-                if (grid[checkPos.Y][checkPos.X] == 'O')
+                if (grid.At(checkPos) == 'O')
                     boxes++;
                 
-                if (grid[checkPos.Y][checkPos.X] == '.')
+                if (grid.At(checkPos) == '.')
                     break;
             }
 
             for (; moveCount >= 0; checkPos += dir * -1, moveCount--)
             {
-                if (grid[checkPos.Y][checkPos.X] == '#')
+                if (grid.At(checkPos) == '#')
                     continue;
 
                 switch (boxes)
                 {
                     case > 0:
-                        grid[checkPos.Y][checkPos.X] = 'O';
+                        grid.Set(checkPos, 'O');
                         boxes--;
                         continue;
                     case 0:
-                        grid[checkPos.Y][checkPos.X] = '@';
+                        grid.Set(checkPos, '@');
                         nextPos = checkPos;
                         boxes--;
                         continue;
                     default:
-                        grid[checkPos.Y][checkPos.X] = '.';
+                        grid.Set(checkPos, '.');
                         break;
                 }
             }
@@ -73,10 +69,10 @@ public class Part01 : PuzzleSolver<long>
         }
 
         var gps = 0;
-        for (int y = 0; y < grid.Length; y++)
-        for (int x = 0; x < grid[0].Length; x++)
+        for (int y = 0; y < grid.Height; y++)
+        for (int x = 0; x < grid.Width; x++)
         {
-            if (grid[y][x] == 'O')
+            if (grid[x, y] == 'O')
                 gps += (100 * y) + x;
         }
         

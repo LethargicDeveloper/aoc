@@ -51,7 +51,7 @@ public class Part02 : PuzzleSolver<long>
                 continue;
             }
             
-            foreach (var next in pos.OrthogonalAdjacentPoints())
+            foreach (var next in pos.OrthogonalNeighbors())
                 if (InBounds(next) && map[(int)next.Y][(int)next.X] == val + 1)
                     queue.Enqueue(next);
         }

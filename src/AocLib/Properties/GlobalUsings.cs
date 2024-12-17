@@ -1,0 +1,1 @@
+global using Point = AocLib.Point<int>;

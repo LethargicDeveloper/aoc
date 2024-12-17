@@ -1,31 +1,26 @@
-using AocLib;
-
 namespace _2024.Day16;
 
 public class Part01 : PuzzleSolver<long>
 {
     protected override long InternalSolve()
     {
-        var grid = input
-            .SplitLines()
-            .Select(s => s.ToCharArray())
-            .ToArray();
+        var grid = input.ToCharGrid();
 
-        var startPos = grid.FindPosition('S');
+        var startPos = grid.Find('S');
         var startDir = Point.Right;
-        var end = grid.FindPosition('E');
+        var end = grid.Find('E');
         
         var bestScore = long.MaxValue;
         var visited = new Dictionary<(Point pos, Point dir), long>();
-        var states = new Stack<(Point pos, Point dir, List<Point> path, long score)>();
+        var states = new Queue<(Point pos, Point dir, List<Point> path, long score)>();
 
         var initialPath = new List<Point>() { startPos };
-        states.Push((startPos, startDir, initialPath, 0));
+        states.Enqueue((startPos, startDir, initialPath, 0));
         visited[(startPos, startDir)] = 0;
         
         var bestPath = new List<Point>();
         
-        while (states.TryPop(out var state))
+        while (states.TryDequeue(out var state))
         {
             var (pos, dir, path, score) = state;
             
@@ -39,23 +34,22 @@ public class Part01 : PuzzleSolver<long>
                 continue;
             }
 
-            var neighbors = pos.OrthogonalAdjacentPoints()
+            var neighbors = pos.OrthogonalNeighbors()
                 .Where(p => grid.At(p) != '#')
                 .Where(p => !path.Contains(p));
 
-            long newScore = 0;
-            long prevScore = 0;
-            
             foreach (var neighbor in neighbors)
             {
                 var newPath = path.Append(neighbor).ToList();
-                
+                long newScore = 0;
+                long prevScore = 0;
+
                 if (pos + dir == neighbor)
                 {
                     newScore = score + 1;
                     if (!visited.TryGetValue((neighbor, dir), out prevScore) || newScore < prevScore)
                     {
-                        states.Push((neighbor, dir, newPath, newScore));
+                        states.Enqueue((neighbor, dir, newPath, newScore));
                         visited[(neighbor, dir)] = newScore;
                     }
 
@@ -80,20 +74,23 @@ public class Part01 : PuzzleSolver<long>
                         break;
                     }
                     
-                    left = (left.turn + 1, Point.TurnLeft(left.dir));
-                    right = (right.turn + 1, Point.TurnRight(right.dir));
+                    left = (left.turn + 1, Point.TurnLeft90(left.dir));
+                    right = (right.turn + 1, Point.TurnRight90(right.dir));
                 }
 
                 newScore = score + 1 + (1000 * newDir.turn);
                 if (!visited.TryGetValue((neighbor, dir), out prevScore) || newScore < prevScore)
                 {
-                    states.Push((neighbor, newDir.dir, newPath, newScore));
+                    states.Enqueue((neighbor, newDir.dir, newPath, newScore));
                     visited[(neighbor, newDir.dir)] = newScore;
                 }
             }
         }
-        
-        grid.Print(overlay: bestPath);
+
+        new GridVisualizer<char>(grid)
+            .WithOverlay((x, y) => bestPath.Contains((x, y)), '@')
+            .WithValueStyle(val => val == '@', "[red]")
+            .Display();
         
         return bestScore;
     }

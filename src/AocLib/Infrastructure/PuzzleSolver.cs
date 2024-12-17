@@ -1,4 +1,6 @@
-﻿using BenchmarkDotNet.Attributes;
+﻿using System.Reflection;
+using BenchmarkDotNet.Attributes;
+using Spectre.Console;
 
 namespace AocLib;
 
@@ -46,7 +48,20 @@ public class PuzzleSolver<T> : IPuzzleSolver
         var solution = InternalSolve();
 
 #if DEBUG
-        Console.WriteLine(solution);
+        var answer = GetType().GetCustomAttribute<AnswerAttribute>()?.Value;
+        var correct = solution?.Equals(Convert.ChangeType(answer, typeof(T)));
+        var style = new Style(foreground: correct switch
+        {
+            true => Color.Green,
+            false => Color.Red,
+            _ => Color.White
+        });
+        
+        var expected = correct.HasValue && !correct.Value
+            ? $" - Expected: {answer}"
+            : string.Empty;
+        
+        AnsiConsole.Write(new Text($"{solution}{expected}", style));
 #endif
     }
 

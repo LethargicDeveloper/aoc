@@ -8,7 +8,7 @@ public partial class Part02 : PuzzleSolver<long>
     [GeneratedRegex("-?\\d+")]
     private static partial Regex NumberRegex();
 
-    static Point FindBeacon(List<(Point Sensor, long Dist)> points, int max)
+    static Point<long> FindBeacon(List<(Point<long> Sensor, long Dist)> points, int max)
     {
         for (int y = 0; y < max; ++y)
         {
@@ -41,11 +41,11 @@ public partial class Part02 : PuzzleSolver<long>
         return (0, 0);
     }
 
-    static long TuningFrequency(Point p) => (p.X * 4000000L) + p.Y;
+    static long TuningFrequency(Point<long> p) => (p.X * 4000000L) + p.Y;
 
-    static HashSet<Point> DetectedArea(IEnumerable<(Point Sensor, Point Beacon)> points, int row)
+    static HashSet<Point<long>> DetectedArea(IEnumerable<(Point<long> Sensor, Point<long> Beacon)> points, int row)
     {
-        var area = new HashSet<Point>();
+        var area = new HashSet<Point<long>>();
         foreach (var point in points)
         {
             var (sensor, beacon) = point;
@@ -76,7 +76,7 @@ public partial class Part02 : PuzzleSolver<long>
         return tuning;
     }
 
-    (Point Sensor, Point Beacon) Parse(string input) =>
+    (Point<long> Sensor, Point<long> Beacon) Parse(string input) =>
         NumberRegex().Matches(input).ToArray() switch
         {
             var a => (

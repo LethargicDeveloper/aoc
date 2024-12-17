@@ -18,7 +18,7 @@ public class Part02 : PuzzleSolver<long>
                     .ToList() switch
                 {
                     [var px, var py, var vx, var vy] =>
-                        (Pos: new Point(px, py), Velocity: new Point(vx, vy)),
+                        (Pos: new Point<long>(px, py), Velocity: new Point<long>(vx, vy)),
                     _ => throw new InvalidOperationException()
                 })
             .ToList();
@@ -36,7 +36,7 @@ public class Part02 : PuzzleSolver<long>
 
             foreach (var point in pos)
             {
-                var tree = new HashSet<Point>();
+                var tree = new HashSet<Point<long>>();
                 tree.Add(point);
 
                 for (int y = 1; y < 5; y++)
@@ -58,7 +58,7 @@ public class Part02 : PuzzleSolver<long>
         return 8006;
     }
 
-    void Print(List<Point> points)
+    void Print(List<Point<long>> points)
     {
         var sb = new StringBuilder();
         for (int y = 0; y < HEIGHT; y++)

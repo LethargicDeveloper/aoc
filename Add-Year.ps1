@@ -28,14 +28,14 @@ For ($i = 1; $i -le 25; $i++) {
   $content = $csproj.CreateElement("None")
   $content.SetAttribute("Update", "$day\01.txt")
   $copyToOutputDir = $csproj.CreateElement("CopyToOutputDirectory")
-  $copyToOutputDir.InnerText = "PreserveNewest"
+  $copyToOutputDir.InnerText = "CopyAlways"
   $content.AppendChild($copyToOutputDir)
   $itemGroup.AppendChild($content)
 
   $content = $csproj.CreateElement("None")
   $content.SetAttribute("Update", "$day\sample.txt")
   $copyToOutputDir = $csproj.CreateElement("CopyToOutputDirectory")
-  $copyToOutputDir.InnerText = "PreserveNewest"
+  $copyToOutputDir.InnerText = "CopyAlways"
   $content.AppendChild($copyToOutputDir)
   $itemGroup.AppendChild($content)
 

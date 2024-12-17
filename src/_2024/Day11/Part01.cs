@@ -1,5 +1,3 @@
-using AocLib;
-
 namespace _2024.Day11;
 
 public class Part01 : PuzzleSolver<long>
@@ -7,7 +5,7 @@ public class Part01 : PuzzleSolver<long>
     protected override long InternalSolve()
     {
         var stones = input
-            .SplitR(' ')
+            .S(' ')
             .Select(long.Parse)
             .ToList();
         

@@ -6,7 +6,7 @@ namespace _2024.Day13;
 
 public class Part02 : PuzzleSolver<double>
 {
-    record ClawMachine(Point ButtonA, Point ButtonB, Point Prize);
+    record ClawMachine(Point<long> ButtonA, Point<long> ButtonB, Point<long> Prize);
     
     protected override double InternalSolve()
     {

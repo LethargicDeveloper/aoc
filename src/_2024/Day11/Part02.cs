@@ -10,7 +10,7 @@ public class Part02 : PuzzleSolver<long>
     protected override long InternalSolve()
     {
         var stones = input
-            .SplitR(' ')
+            .S(' ')
             .Select(s => (Value: long.Parse(s), Depth: MAX_BLINK))
             .ToList();
 

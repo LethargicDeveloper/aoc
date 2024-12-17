@@ -6,16 +6,13 @@ public class Part02 : PuzzleSolver<long>
 {
     protected override long InternalSolve()
     {
-        var grid = input
-            .SplitLines()
-            .Select(s => s.ToCharArray())
-            .ToArray();
+        var grid = input.ToCharGrid();
 
-        var startPos = grid.FindPosition('S');
+        var startPos = grid.Find('S');
         var startDir = Point.Right;
-        var end = grid.FindPosition('E');
+        var end = grid.Find('E');
         
-        var bestScore = long.MaxValue;
+        long bestScore = long.MaxValue;
         var visited = new Dictionary<(Point pos, Point dir), long>();
         var states = new Queue<(Point pos, Point dir, List<Point> path, long score)>();
 
@@ -43,7 +40,7 @@ public class Part02 : PuzzleSolver<long>
                 continue;
             }
 
-            var neighbors = pos.OrthogonalAdjacentPoints()
+            var neighbors = pos.OrthogonalNeighbors()
                 .Where(p => grid.At(p) != '#')
                 .Where(p => !path.Contains(p));
 
@@ -84,8 +81,8 @@ public class Part02 : PuzzleSolver<long>
                         break;
                     }
                     
-                    left = (left.turn + 1, Point.TurnLeft(left.dir));
-                    right = (right.turn + 1, Point.TurnRight(right.dir));
+                    left = (left.turn + 1, Point.TurnLeft90(left.dir));
+                    right = (right.turn + 1, Point.TurnRight90(right.dir));
                 }
 
                 newScore = score + 1 + (1000 * newDir.turn);

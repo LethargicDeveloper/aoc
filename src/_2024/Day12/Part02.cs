@@ -28,7 +28,7 @@ public class Part02 : PuzzleSolver<long>
                 if (!visited.Add(p))
                     continue;
 
-                var neighbors = p.OrthogonalAdjacentPoints()
+                var neighbors = p.OrthogonalNeighbors()
                     .Where(n => n.InBounds(0, 0, grid[0].Length - 1, grid.Length - 1))
                     .Where(n => grid[n.Y][n.X] == plot)
                     .ToHashSet();

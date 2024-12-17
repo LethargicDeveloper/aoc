@@ -6,17 +6,8 @@ namespace _2024.Day04;
 public class Part01 : PuzzleSolver<long>
 {
     private const string word = "XMAS";
-    
-    private readonly (int x, int y)[] dirs = [
-        (0, -1),  // up
-        (0, 1),   // down
-        (-1, 0),  // left
-        (1, 0),   // right
-        (-1, -1), // up-left
-        (1, -1),  // up-right
-        (-1, 1),  // down-left
-        (1, 1),   // down-right
-    ];
+
+    private readonly Point[] dirs = Point.Directions;
     
     private string[] lines;
     
@@ -32,7 +23,7 @@ public class Part01 : PuzzleSolver<long>
             {
                 if (lines[y][x] == word[0])
                 {
-                    count += dirs.Count(dir => CheckDirection(word, x, y, dir.x, dir.y));
+                    count += dirs.Count(dir => CheckDirection(word, x, y, dir.X, dir.Y));
                 }
             }
         }

@@ -18,11 +18,11 @@ public class Part01 : PuzzleSolver<long>
                     .ToList() switch
                 {
                     [var px, var py, var vx, var vy] =>
-                        (Pos: new Point(px, py), Velocity: new Point(vx, vy)),
+                        (Pos: new Point<long>(px, py), Velocity: new Point<long>(vx, vy)),
                     _ => throw new InvalidOperationException()
                 })
             .Select(v => v.Pos + (v.Velocity * TIME))
-            .Select(v => new Point(MathEx.Mod(v.X, WIDTH), MathEx.Mod(v.Y, HEIGHT)))
+            .Select(v => new Point<long>(MathEx.Mod(v.X, WIDTH), MathEx.Mod(v.Y, HEIGHT)))
             .Where(p => p.X != WIDTH / 2 && p.Y != HEIGHT / 2)
             .GroupBy(p =>
             { 
