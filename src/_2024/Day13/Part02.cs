@@ -44,7 +44,7 @@ public class Part02 : PuzzleSolver<double>
              .Where(v =>
              {
                  var dec = v - Math.Truncate(v);
-                 return MathEx.Approximate(dec, 1) || MathEx.Approximate(dec, 0);
+                 return MathEx.ApproximateEquals(dec, 1) || MathEx.ApproximateEquals(dec, 0);
              })
             .ToList();
         

@@ -10,7 +10,7 @@ public class Part02 : PuzzleSolver<long>
         var lists = input
             .ParseNumbers<int>()
             .Transpose()
-            .ToCollections();
+            .ToLists();
 
         var answer = lists[0]
             .ToDictionary(k => k, v => lists[1].Count(x => x == v) * v)

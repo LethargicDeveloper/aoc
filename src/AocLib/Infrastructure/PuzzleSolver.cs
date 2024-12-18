@@ -49,7 +49,7 @@ public class PuzzleSolver<T> : IPuzzleSolver
 
 #if DEBUG
         var answer = GetType().GetCustomAttribute<AnswerAttribute>()?.Value;
-        var correct = solution?.Equals(Convert.ChangeType(answer, typeof(T)));
+        var correct = answer is null ? null : solution?.Equals(Convert.ChangeType(answer, typeof(T)));
         var style = new Style(foreground: correct switch
         {
             true => Color.Green,

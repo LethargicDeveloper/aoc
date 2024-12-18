@@ -1,3 +1,4 @@
+using System.Numerics;
 using AocLib;
 
 namespace _2024.Day11;
@@ -43,9 +44,9 @@ public class Part02 : PuzzleSolver<long>
             return hash[key];
         }
         
-        if (value.NumberOfDigits() % 2 == 0)
+        if (value.DigitCount() % 2 == 0)
         {
-            var (stone1, stone2) = value.Split();
+            var (stone1, stone2) = Split(value);
             hash[key] += GetStoneCountAtDepth((stone1, depth - 1));
             hash[key] += GetStoneCountAtDepth((stone2, depth - 1));
             return hash[key];
@@ -53,5 +54,15 @@ public class Part02 : PuzzleSolver<long>
         
         hash[key] += GetStoneCountAtDepth((value * 2024, depth - 1));
         return hash[key];
+    }
+    
+    private static (T part1, T part2) Split<T>(T number)
+        where T : INumber<T>
+    {
+        var mid = number.DigitCount() / 2;
+        var divisor = (T)Convert.ChangeType(Math.Pow(10, mid), typeof(T));
+        var part1 = number / divisor;
+        var part2 = number % divisor;
+        return (part1, part2);
     }
 }

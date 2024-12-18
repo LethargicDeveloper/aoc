@@ -1,43 +1,28 @@
-using AocLib;
 using MoreLinq.Extensions;
 
 namespace _2024.Day02;
 
+[Answer(589)]
 public class Part02 : PuzzleSolver<long>
 {
     protected override long InternalSolve()
     {
-        var reports = input
-            .SplitLines()
-            .Select(x => x.Split(" ").Select(long.Parse).ToArray())
-            .ToArray();
-
-        long safe = 0;
-        
-        foreach (var report in reports)
-        {
-            var isSafe = IsSafe(report);
-            if (isSafe) safe++;
-        }
-        
+        var safe = input
+            .ParseNumbers<long>()
+            .Count(IsSafe);
+       
         return safe;
     }
 
-    bool IsSafe(long[] report)
+    bool IsSafe(List<long> report)
     {
-        var valid = ValidRecord(report);
-        if (valid) return true;
-        
-        for (int i = 0; i < report.Length; i++)
-        {
-            valid = ValidRecord(report.Where((_, ix) => ix != i).ToArray());
-            if (valid) return true;
-        }
-
-        return false;
+        return Enumerable
+            .Range(0, report.Count)
+            .Select(i => report.Where((_, ix) => ix != i).ToList())
+            .Any(ValidRecord);
     }
     
-    bool ValidRecord(long[] report)
+    bool ValidRecord(List<long> report)
     {
         var window = report.Window(2).Select(x => x[1] - x[0]).ToList();
 

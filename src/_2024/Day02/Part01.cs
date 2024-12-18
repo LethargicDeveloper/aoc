@@ -1,41 +1,27 @@
-using System.Text.RegularExpressions;
-using AocLib;
-using Microsoft.CodeAnalysis;
-
 namespace _2024.Day02;
 
-public class Part01 : PuzzleSolver<int>
+[Answer(549)]
+public class Part01 : PuzzleSolver<long>
 {
-    protected override int InternalSolve()
+    protected override long InternalSolve()
     {
-        var reports = input
-            .SplitLines()
-            .Select(x => x.Split(" ").Select(x => x.AsInt()).ToArray())
-            .ToArray();
+        var reports = input.ParseNumbers<long>();
 
-        static bool IsValid(int[] record)
-        {
-            int prev = 0;
-
-            for (int i = 1; i < record.Length; i++)
-            {
-                var val = record[i] - record[i - 1];
-
-                if (val == 0 || Math.Abs(val) > 3 || (i > 1 && Math.Sign(val) != Math.Sign(prev)))
-                    return false;
-
-                prev = val;
-            }
-
-            return true;
-        }
-
-        int safe = 0;
-        for (int i = 0; i < reports.Length; i++)
-        {
-            if (IsValid(reports[i])) safe++;
-        }
+        var answer = reports
+            .Count(record => Rule1(record) && Rule2(record));
         
-        return safe;
+        return answer;
+    }
+    
+    private static bool Rule2(List<long> record) => record
+        .WithIndex()
+        .Skip(1)
+        .All(level => Math.Abs(level.Value - record[level.Index - 1]) <= 3);
+
+    private static bool Rule1(List<long> record)
+    {
+        var distinct = record.ToHashSet();
+        return distinct.SequenceEqual(record.OrderBy()) ||
+               distinct.SequenceEqual(record.OrderByDescending());   
     }
 }

@@ -1,3 +1,5 @@
+using System.Numerics;
+
 namespace _2024.Day11;
 
 public class Part01 : PuzzleSolver<long>
@@ -19,9 +21,9 @@ public class Part01 : PuzzleSolver<long>
                 {
                     stones[i] = 1;
                 }
-                else if (stone.NumberOfDigits() % 2 == 0)
+                else if (stone.DigitCount() % 2 == 0)
                 {
-                    var (stone1, stone2) = stone.Split();
+                    var (stone1, stone2) = Split(stone);
 
                     stones[i] = stone2;
                     stones.Insert(i++, stone1);
@@ -34,5 +36,15 @@ public class Part01 : PuzzleSolver<long>
         }
 
         return stones.Count;
+    }
+    
+    private static (T part1, T part2) Split<T>(T number)
+        where T : INumber<T>
+    {
+        var mid = number.DigitCount() / 2;
+        var divisor = (T)Convert.ChangeType(Math.Pow(10, mid), typeof(T));
+        var part1 = number / divisor;
+        var part2 = number % divisor;
+        return (part1, part2);
     }
 }

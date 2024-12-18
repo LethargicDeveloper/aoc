@@ -1,32 +1,24 @@
 using System.Text.RegularExpressions;
-using AocLib;
 
 namespace _2024.Day03;
 
+[Answer(67269798)]
 public partial class Part02 : PuzzleSolver<long>
 {
     protected override long InternalSolve()
     {
         bool multiply = true;
-        long answer = 0;
-        
-        foreach (Match match in MulRegex().Matches(input))
-        {
-            switch (match.Groups["op"].Value)
+        var answer = MulRegex().Matches(input)
+            .Select(m =>
             {
-                case "mul":
-                    answer += multiply
-                        ? long.Parse(match.Groups["val1"].Value) * long.Parse(match.Groups["val2"].Value)
-                        : 0;
-                    break;
-                case "do":
-                    multiply = true;
-                    break;
-                case "don't":
-                    multiply = false;
-                    break;
-            }
-        }
+                var op = m.Get("op");
+                if (op == "mul")
+                    return multiply ? m.ParseNumbers<long>().Product() : 0;
+                
+                multiply = op == "do";
+                return 0;
+            })
+            .Sum();
 
         return answer;
     }
