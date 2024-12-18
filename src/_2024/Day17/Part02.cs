@@ -5,10 +5,7 @@ public class Part02 : PuzzleSolver<double>
 {
     protected override double InternalSolve()
     {
-        var program = input.SplitEmptyLines()[1]
-            .ParseNumbers<int>()[0];
-        
-        var expected = string.Join(",", program);
+        var expected = input.SplitEmptyLines()[1].S(' ')[1];
 
         double total = 4;
 
