@@ -17,7 +17,7 @@ public class Part02 : PuzzleSolver<long>
                 .Replace("O", "[]")
                 .Replace(".", "..")
                 .Replace("@", "@."))
-            .ToCharGrid();
+            .ToGrid<char>();
 
         var cmds = data[1]
             .SplitLines()

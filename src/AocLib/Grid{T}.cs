@@ -43,19 +43,29 @@ public class Grid<T>
 
     public static Grid<T> Create(string input, Func<string, T[]> parser) =>
         Create(input.SplitLines(), parser);
-    
-    public static Grid<T> Create(IEnumerable<string> input, Func<string, T[]> parser) =>
-        new()
-        {
-            grid = input.Select(parser).Select(p => p.ToList()).ToList()
-        };
+
+    public static Grid<T> Create(IEnumerable<string> input, Func<string, T[]> parser)
+    {
+        var list = input.Select(parser).Select(p => p.ToList()).ToList();
+        
+        if (list.Any(row => row.Count != list[0].Count))
+            throw new Exception("Invalid input. All rows must be the same length.");
+        
+        return new() { grid = list };
+    }
 }
 
 public static class GridExtensions
 {
-    public static Grid<char> ToCharGrid(this string input) =>
-        Grid<char>.Create(input, str => str.ToCharArray());
+    public static Grid<T> ToGrid<T>(this string input)
+        where T : IEquatable<T> => ToGrid<T>(input.SplitLines());
     
-    public static Grid<char> ToCharGrid(this IEnumerable<string> input) =>
-        Grid<char>.Create(input, str => str.ToCharArray());
+    public static Grid<T> ToGrid<T>(this IEnumerable<string> input)
+        where T : IEquatable<T> => typeof(T) switch
+        {
+            var t when t == typeof(char) => Grid<char>.Create(input, str => str.ToCharArray()) as Grid<T>
+                ?? throw new Exception("Unable to convert string to Grid<char>"),
+
+            _ => throw new ArgumentException($"Invalid type {typeof(T)}", nameof(input)),
+        };
 }
