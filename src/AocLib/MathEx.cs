@@ -7,6 +7,10 @@ public static class MathEx
     public static T Lcm<T>(T a, T b)
         where T : INumber<T> => (a / Gcd(a, b)) * b;
     
+    public static T Lcm<T>(this IEnumerable<T> list)
+        where T : INumber<T> =>
+        list.Aggregate(Lcm);
+    
     public static T Gcd<T>(T a, T b)
         where T : INumber<T>
     {
@@ -20,6 +24,11 @@ public static class MathEx
         return a;
     }
     
+    public static T Gcd<T>(this IEnumerable<T> list)
+        where T : INumber<T> =>
+        list.Aggregate(Gcd);
+
+    
     public static int DigitCount<T>(this T number)
         where T : INumber<T>
     {
@@ -30,7 +39,7 @@ public static class MathEx
         return (int)Math.Floor(Math.Log10(value) + 1);
     }
     
-    public static bool ApproximateEquals<T>(T n1, T n2, T? tolerance = default)
+    public static bool ApproximateEquals<T>(this T n1, T n2, T? tolerance = default)
         where T : IBinaryFloatingPointIeee754<T>
         => T.Abs(n1 - n2) < (tolerance == default ? T.CreateTruncating(0.001) : tolerance!);
     
@@ -40,7 +49,7 @@ public static class MathEx
         var r = num % mod;
         return r < T.Zero ? r + mod : r;
     }
-
+    
     // public static T Max<T>(params T[] values)
     //     where T : struct, INumber<T>
     //     => (values ?? []).Aggregate((acc, cur) => acc > cur ? acc : cur);
@@ -74,22 +83,4 @@ public static class MathEx
     // public static T TriangularNumber<T>(T n)
     //     where T : struct, INumber<T>
     //     => ((n * n) + n) / (T.One + T.One);
-}
-
-public static class NumericExtensions
-{
-    public static T Lcm<T>(this IEnumerable<T> list)
-        where T : INumber<T> =>
-        list.Aggregate(MathEx.Lcm);
-    
-    public static T Gcd<T>(this IEnumerable<T> list)
-        where T : INumber<T> =>
-        list.Aggregate(MathEx.Gcd);
-    
-    public static bool ApproximateEquals<T>(this T n1, T n2, T? tolerance = default)
-        where T : IBinaryFloatingPointIeee754<T> =>
-        MathEx.ApproximateEquals(n1, n2, tolerance);
-    
-    public static T Mod<T>(this T num, T mod)
-        where T : INumber<T> => MathEx.Mod(num, mod);
 }

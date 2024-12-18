@@ -1,9 +1,11 @@
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
+using System.Text.RegularExpressions;
 
 namespace AocLib;
 
-public readonly record struct Point<T>(T X, T Y)
+public readonly record struct Point<T>(T X, T Y) : ISpanParsable<Point<T>>
     where T : INumber<T>
 {
     public Point() : this(T.Zero, T.Zero) {}
@@ -65,7 +67,9 @@ public readonly record struct Point<T>(T X, T Y)
     
     public bool IsNeighborOf(Point<T> point) =>
         Neighbors().Contains(point);
-    
+
+    public override string ToString() => $"({X}, {Y})";
+
     public static Point<T> operator +(Point<T> point1, Point<T> point2) =>
         new(point1.X + point2.X, point1.Y + point2.Y);
     
@@ -143,4 +147,44 @@ public readonly record struct Point<T>(T X, T Y)
     
     public static Point<T>[] Directions { get; } =
         [UpLeft, Up, UpRight, Right, DownRight, Down, DownLeft, Left];
+
+    public static Point<T> Parse(string s, IFormatProvider? provider)
+    {
+        if (TryParse(s, provider, out var point))
+            return point;
+        
+        throw new FormatException($"Unable to parse '{s}'.");
+    }
+
+    public static bool TryParse([NotNullWhen(true)] string? s, IFormatProvider? provider, out Point<T> result)
+    {
+        result = default;
+        
+        var numbers = s?.ParseNumbers<T>()[0] ?? [];
+        if (numbers.Count != 2)
+            return false;
+
+        result = new(numbers[0], numbers[1]);
+        return true;
+    }
+
+    public static Point<T> Parse(ReadOnlySpan<char> s, IFormatProvider? provider)
+    {
+        if (TryParse(s, provider, out var point))
+            return point;
+        
+        throw new FormatException($"Unable to parse '{s}'.");
+    }
+
+    public static bool TryParse(ReadOnlySpan<char> s, IFormatProvider? provider, out Point<T> result)
+    {
+        result = default;
+        
+        var numbers = s.ToString().ParseNumbers<T>()[0];
+        if (numbers.Count != 2)
+            return false;
+
+        result = new(numbers[0], numbers[1]);
+        return true;
+    }
 }

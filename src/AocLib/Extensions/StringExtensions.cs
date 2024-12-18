@@ -28,10 +28,23 @@ public static partial class StringExtensions
         return str
             .SplitLines()
             .Select(line => NumberRegex().Matches(line))
-            .Select(nums => nums.Select(n => T.Parse(n.Value.AsSpan(), null)).ToList())
+            .Select(nums => nums.Select(n => T.Parse(n.ValueSpan, null)).ToList())
+            .ToList();
+    }
+    
+    public static List<List<Point<T>>> ParsePoints<T>(this string str)
+        where T : INumber<T>
+    {
+        return str
+            .SplitLines()
+            .Select(line => PointRegex().Matches(line))
+            .Select(points => points.Select(p => Point<T>.Parse(p.ValueSpan, null)).ToList())
             .ToList();
     }
 
     [GeneratedRegex(@"[+-]?\d+")]
     private static partial Regex NumberRegex();
+    
+    [GeneratedRegex(@"\d+,\d+")]
+    private static partial Regex PointRegex();
 }
