@@ -1,3 +1,5 @@
+using System.Numerics;
+
 namespace AocLib;
 
 public class Grid<T>
