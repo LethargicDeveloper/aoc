@@ -16,7 +16,6 @@ public class Part02 : PuzzleSolver<long>
         foreach (var towel in want)
         {
             var result = GetTowelCombination(towel);
-            Console.WriteLine($"{towel}: {result}");
             total += result;
         }
 
