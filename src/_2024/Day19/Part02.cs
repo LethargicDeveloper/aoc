@@ -11,15 +11,7 @@ public class Part02 : PuzzleSolver<long>
         have = towels[0].Split(", ").ToHashSet();
         var want = towels[1].SplitLines();
 
-        long total = 0;
-
-        foreach (var towel in want)
-        {
-            var result = GetTowelCombination(towel);
-            total += result;
-        }
-
-        return total;
+        return want.Sum(GetTowelCombination);
     }
 
     long GetTowelCombination(string towel)
