@@ -86,11 +86,6 @@ public class Part01 : PuzzleSolver<long>
                 }
             }
         }
-
-        new GridVisualizer<char>(grid)
-            .WithOverlay((x, y) => bestPath.Contains((x, y)), '@')
-            .WithValueStyle(val => val == '@', "[red]")
-            .Display();
         
         return bestScore;
     }

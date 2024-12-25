@@ -31,7 +31,7 @@ public class Grid<T>
     public void Set((int X, int Y) position, T value) =>
         grid[position.Y][position.X] = value;
     
-    public (int X, int Y) Find(T value)
+    public Point Find(T value)
     {
         for (int y = 0; y < grid.Count; y++)
         for (int x = 0; x < grid[0].Count; x++)
@@ -42,6 +42,9 @@ public class Grid<T>
         
         throw new KeyNotFoundException($"Value {value} was not found.");
     }
+    
+    public bool InBounds(Point point) =>
+        point.InBounds(0, 0, Width - 1, Height - 1);
 
     public static Grid<T> Create(string input, Func<string, T[]> parser) =>
         Create(input.SplitLines(), parser);
