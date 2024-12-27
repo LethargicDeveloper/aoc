@@ -4,7 +4,7 @@ public class Part02 : PuzzleSolver<long>
 {
     protected override long InternalSolve()
     {
-        const int CHEAT_TIME = 50;
+        const int CHEAT_TIME = 100;
         
         var grid = input.ToGrid<char>();
         var start = grid.Find('S');
@@ -22,17 +22,17 @@ public class Part02 : PuzzleSolver<long>
                 .Select(n => (Track: pos, Start: n)));
 
         var cheatsToCheck = cheatStarts
-            .SelectMany(cheat => track
-                .Where(pos => pos.ManhattanDistance(cheat.Start) <= 20)
-                .Select(pos => (cheat.Track, cheat.Start, End: pos)))
+                .SelectMany(cheat => track
+                    .Where(pos => cheat.Track.ManhattanDistance(pos) <= 20)
+                    .Select(pos => (cheat.Track, cheat.Start, End: pos)))
             .Where(cheat => ix[cheat.Track] < ix[cheat.End]);
         
         var bestTimes = cheatsToCheck
             .Select(cheat =>
             {
                 var trackLength = track.Count - 1;
-                var startToCheat = ix[cheat.Track] + 1;
-                var cheatLength = cheat.Start.ManhattanDistance(cheat.End);
+                var startToCheat = ix[cheat.Track];
+                var cheatLength = cheat.Track.ManhattanDistance(cheat.End);
                 var cheatToEnd = trackLength - ix[cheat.End];
                 var timeSaved = trackLength - startToCheat - cheatToEnd - cheatLength;
                 return (cheat.Track, cheat.Start, cheat.End, TimeSaved: timeSaved);
