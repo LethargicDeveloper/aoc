@@ -4,7 +4,7 @@ public class Part02 : PuzzleSolver<long>
 {
     protected override long InternalSolve()
     {
-        const int CHEAT_TIME = 100;
+        const int CHEAT_TIME = 50;
         
         var grid = input.ToGrid<char>();
         var start = grid.Find('S');
@@ -22,82 +22,25 @@ public class Part02 : PuzzleSolver<long>
                 .Select(n => (Track: pos, Start: n)));
 
         var cheatsToCheck = cheatStarts
-                .SelectMany(cheat => track
-                    .Where(pos => pos.ManhattanDistance(cheat.Start) <= 20)
-                    .Select(pos => (cheat.Track, cheat.Start, End: pos)))
+            .SelectMany(cheat => track
+                .Where(pos => pos.ManhattanDistance(cheat.Start) <= 20)
+                .Select(pos => (cheat.Track, cheat.Start, End: pos)))
             .Where(cheat => ix[cheat.Track] < ix[cheat.End]);
-
-        var found = new HashSet<(Point, Point)>();
-        foreach (var cheat in cheatsToCheck)
-        {
-            if (found.Contains((cheat.Track, cheat.End)))
-                continue;
-
-            var states = new Queue<(Point, int, Point[])>();
-            states.Enqueue((cheat.Start, 0, [cheat.Start]));
-            
-            var visited = new HashSet<Point>();
-            visited.AddRange(track[..(ix[cheat.Track] + 1)]);
-
-            while (states.TryDequeue(out var state))
-            {
-                var (pos, length, path) = state;
-
-                if (!visited.Add(pos))
-                    continue;
-
-                if (length > 20)
-                    continue;
-
-                if (pos == cheat.End)
-                {
-                    var distStartToCheatStart = ix[cheat.Track] + 1;
-                    var distCheatEndToEnd = (track.Count - 1) - ix[cheat.End];
-                    var timeSaved = (track.Count - 1) - (distStartToCheatStart + length + distCheatEndToEnd);
-                    if (timeSaved >= CHEAT_TIME)
-                    {
-                        found.Add((cheat.Track, cheat.End));
-                        
-                        // new GridVisualizer<char>(grid)
-                        //     .WithData(new
-                        //     {
-                        //         distStartToCheatStart,
-                        //         length,
-                        //         distCheatEndToEnd,
-                        //         timeSaved
-                        //     })
-                        //     .WithOverlay(track.Contains, '@')
-                        //     .WithOverlay(path.Contains, '*')
-                        //     .WithOverlay(v => v == start, 'S')
-                        //     .WithOverlay(v => v == end, 'E')
-                        //     .WithOverlay(v => v == cheat.Start, '1')
-                        //     .WithOverlay(v => v == cheat.End, '2')
-                        //     .WithOverlay(v => v == cheat.Track, '!')
-                        //     .WithStyle((_, v) => v == '#', "[gray]")
-                        //     .WithStyle((_, v) => "SE".Contains(v), "[green]")
-                        //     .WithStyle((_, v) => v == '@', "[red]")
-                        //     .WithStyle((_, v) => v == '*', "[yellow]")
-                        //     .WithStyle((_, v) => "!12".Contains(v), "[yellow]")
-                        //     .Display(wait: true);
-                        
-                        break;
-                    }
-
-                    continue;
-                }
-                
-                var neighbors = pos
-                    .OrthogonalNeighbors()
-                    .Where(grid.InBounds)
-                    .Where(n => !visited.Contains(n));
-
-                foreach (var neighbor in neighbors)
-                {
-                    states.Enqueue((neighbor, length + 1, [..path, neighbor]));
-                }
-            }
-        }
         
-        return found.Count;
+        var bestTimes = cheatsToCheck
+            .Select(cheat =>
+            {
+                var trackLength = track.Count - 1;
+                var startToCheat = ix[cheat.Track] + 1;
+                var cheatLength = cheat.Start.ManhattanDistance(cheat.End);
+                var cheatToEnd = trackLength - ix[cheat.End];
+                var timeSaved = trackLength - startToCheat - cheatToEnd - cheatLength;
+                return (cheat.Track, cheat.Start, cheat.End, TimeSaved: timeSaved);
+            })
+            .Where(cheat => cheat.TimeSaved >= CHEAT_TIME)
+            .DistinctBy(cheat => (cheat.Track, cheat.End));
+        
+        
+        return bestTimes.Count();
     }
 }
