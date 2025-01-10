@@ -1,9 +1,10 @@
+using System.Numerics;
 using System.Text;
 using MoreLinq;
 
 namespace _2024.Day21;
 
-// < 169132
+[Answer(163920)]
 public class Part01 : PuzzleSolver<long>
 {
     protected override long InternalSolve()
@@ -23,7 +24,8 @@ public class Part01 : PuzzleSolver<long>
         var numpadStart = numpad.Find('A');
         var dirpadStart = dirpad.Find('A');
 
-        List<Point> GetPath(Point s, Point e) => [s, ..Point.GetPointsBetween(s, e), e];
+        List<Point> GetPathByX(Point s, Point e) => [s, ..GetPointsBetweenByX(s, e), e];
+        List<Point> GetPathByY(Point s, Point e) => [s, ..GetPointsBetweenByY(s, e), e];
         
         List<Point> GetDirections(List<Point> path, Point avoid)
         {
@@ -40,9 +42,15 @@ public class Part01 : PuzzleSolver<long>
             return dirs.Select(d => d.Second).ToList();
         }
 
-        List<Point> GetRobotPath(Point start, Point end, Point avoid)
+        List<Point> GetRobotPathByX(Point start, Point end, Point avoid) =>
+            GetRobotPath(start, end, avoid, GetPathByX);
+        
+        List<Point> GetRobotPathByY(Point start, Point end, Point avoid) =>
+            GetRobotPath(start, end, avoid, GetPathByY);
+        
+        List<Point> GetRobotPath(Point start, Point end, Point avoid, Func<Point, Point, List<Point>> getPath)
         {
-            var path = GetPath(start, end);
+            var path = getPath(start, end);
                 
             var symbols = GetDirections(path, avoid)
                 .Skip(1)
@@ -62,6 +70,15 @@ public class Part01 : PuzzleSolver<long>
                 .Select(dirpad.Find)
                 .ToList();
         }
+
+        List<Point> GetDirPadRobotPath(Point start, List<Point> prevPath, Func<Point, Point, Point, List<Point>> getPath)
+        {
+            return new List<Point> { start }
+                .Concat(prevPath)
+                .Window(2)
+                .SelectMany(w => getPath(w[0], w[1], (0, 0)))
+                .ToList();
+        }
         
         var codes = input.SplitLines();
 
@@ -76,22 +93,39 @@ public class Part01 : PuzzleSolver<long>
             foreach (var num in code)
             {
                 var end = numpad.Find(num);
-
-                var rob2Path = GetRobotPath(rob1pos, end, (0, 3));
                 
-                var rob3Path = new List<Point> { dirpadStart }
-                    .Concat(rob2Path)
-                    .Window(2)
-                    .SelectMany(w => GetRobotPath(w[0], w[1], (0, 0)));
-                
-                var rob4Path = new List<Point> { dirpadStart }
-                    .Concat(rob3Path)
-                    .Window(2)
-                    .SelectMany(w => GetRobotPath(w[0], w[1], (0, 0)));
+                var rob2PathX = GetRobotPathByX(rob1pos, end, (0, 3));
+                var rob2PathY = GetRobotPathByY(rob1pos, end, (0, 3));
 
+                var rob3PathXX = GetDirPadRobotPath(dirpadStart, rob2PathX, GetRobotPathByX);
+                var rob3PathXY = GetDirPadRobotPath(dirpadStart, rob2PathY, GetRobotPathByX);
+                var rob3PathYX = GetDirPadRobotPath(dirpadStart, rob2PathX, GetRobotPathByY);
+                var rob3PathYY = GetDirPadRobotPath(dirpadStart, rob2PathY, GetRobotPathByY);
+                
+                var rob4PathXXX = GetDirPadRobotPath(dirpadStart, rob3PathXX, GetRobotPathByX);
+                var rob4PathXXY = GetDirPadRobotPath(dirpadStart, rob3PathXY, GetRobotPathByX);
+                var rob4PathXYX = GetDirPadRobotPath(dirpadStart, rob3PathYX, GetRobotPathByX);
+                var rob4PathXYY = GetDirPadRobotPath(dirpadStart, rob3PathYY, GetRobotPathByX);
+                var rob4PathYXX = GetDirPadRobotPath(dirpadStart, rob3PathXX, GetRobotPathByY);
+                var rob4PathYXY = GetDirPadRobotPath(dirpadStart, rob3PathXY, GetRobotPathByY);
+                var rob4PathYYX = GetDirPadRobotPath(dirpadStart, rob3PathYX, GetRobotPathByY);
+                var rob4PathYYY = GetDirPadRobotPath(dirpadStart, rob3PathYY, GetRobotPathByY);
+
+                var robPath = new[]
+                {
+                    rob4PathXXX,
+                    rob4PathXXY,
+                    rob4PathXYX,
+                    rob4PathXYY,
+                    rob4PathYXX,
+                    rob4PathYXY,
+                    rob4PathYYX,
+                    rob4PathYYY
+                }.MinBy(p => p.Count);
+                   
                 rob1pos = end;
 
-                var display = string.Join("", rob4Path.Select(p => dirpad[p]));
+                var display = string.Join("", robPath.Select(p => dirpad[p]));
                 sb.Append(display);
             }
             
@@ -118,22 +152,57 @@ public class Part01 : PuzzleSolver<long>
             .Select(s => s.Path.Length * s.Code.ParseNumbers<int>()[0][0])
             .Sum();
     }
+    
+    public static IEnumerable<Point<T>> GetPointsBetweenByY<T>(Point<T> start, Point<T> end)
+        where T : INumber<T>
+    {
+        T x = start.X;
+        T y = start.Y;
+
+        while (x != end.X || y != end.Y)
+        {
+            bool changed = y != end.Y;
+            
+            if (y < end.Y) y++;
+            else if (y > end.Y) y--;
+
+            if (!changed)
+            {
+                if (x < end.X) x++;
+                else if (x > end.X) x--;
+            }
+            
+            if ((x, y) == end)
+                yield break;
+            
+            yield return new Point<T>(x, y);
+        }
+    }
+    
+    public static IEnumerable<Point<T>> GetPointsBetweenByX<T>(Point<T> start, Point<T> end)
+        where T : INumber<T>
+    {
+        T x = start.X;
+        T y = start.Y;
+        
+        while (x != end.X || y != end.Y)
+        {
+            bool changed = x != end.X;
+            
+            if (x < end.X) x++;
+            else if (x > end.X) x--;
+        
+            if (!changed)
+            {
+                if (y < end.Y) y++;
+                else if (y > end.Y) y--;
+        
+            }
+            
+            if ((x, y) == end)
+                yield break;
+            
+            yield return new Point<T>(x, y);
+        }
+    }
 }
-
-/*
-         <vA<AA^>>A<A>vAA^Av<<A^>>AvA^Av<<A^>>AAvA<A>^A<A>Av<<A>A>^AAAvA<^A>A
-   029A: <vA<AA>>^AvAA<^A>A<v<A>>^AvA^A<vA>^A<v<A>^A>AAvA^A<v<A>A>^AAAvA<^A>A
-   
-         v<<A^>>AAAvA^A<vA<AA^>>A<A>vAA^Av<<A>A>^AAAvA<^A>A<vA>^A<A>A
-   980A: <v<A>>^AAAvA^A<vA<AA>>^AvAA<^A>A<v<A>A>^AAAvA<^A>A<vA>^A<A>A
-   
-         <<vAA>A>^AAvA<^A>AvA^A<<vA>>^AvA^A<vA>^A<A>A<<vA>A>^AAAvA<^A>A
-   179A: <v<A>>^A<vA<A>>^AAvAA<^A>A<v<A>>^AAvA^A<vA>^AA<A>A<v<A>A>^AAAvA<^A>A
-   
-         <<vAA>A>^AAvA<^A>AAvA^A<vA>^A<A>A<vA>^A<A>A<<vA>A>^AAvA<^A>A
-   456A: <v<A>>^AA<vA<A>>^AAvAA<^A>A<vA>^A<A>A<vA>^A<A>A<v<A>A>^AAvA<^A>A
-   
-         <<vA>>^AvA^A<<vAA>A>^AAvA<^A>A vA^A<vA>^A <A>A<<vA>A>^AAAvA<^A>A
-   379A: <v<A>>^AvA^A<vA<AA>>^AAvA<^A>AAvA^A<vA>^AA<A>A<v<A>A>^AAAvA<^A>A
- */
-

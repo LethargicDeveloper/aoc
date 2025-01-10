@@ -129,32 +129,6 @@ public readonly record struct Point<T>(T X, T Y) : ISpanParsable<Point<T>>
         
         return directions[index];
     }
-
-    public static IEnumerable<Point<T>> GetPointsBetween(Point<T> start, Point<T> end, bool includeDiagonals = false)
-    {
-        T x = start.X;
-        T y = start.Y;
-
-        while (x != end.X || y != end.Y)
-        {
-            bool changed = x != end.X;
-            
-            if (x < end.X) x++;
-            else if (x > end.X) x--;
-
-            if (!changed || includeDiagonals)
-            {
-                if (y < end.Y) y++;
-                else if (y > end.Y) y--;
-
-            }
-            
-            if ((x, y) == end)
-                yield break;
-            
-            yield return new Point<T>(x, y);
-        }
-    }
     
     public static Point<T> Zero { get; } = (T.Zero, T.Zero);
     public static Point<T> Up { get; } = (T.Zero, -T.One);

@@ -62,6 +62,7 @@ public class PuzzleSolver<T> : IPuzzleSolver
             : string.Empty;
         
         AnsiConsole.Write(new Text($"{solution}{expected}", style));
+        AnsiConsole.WriteLine();
 #endif
     }
 
