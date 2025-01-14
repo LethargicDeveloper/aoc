@@ -46,8 +46,6 @@ public class Part01 : PuzzleSolver<long>
             }
 
             var subtotal = Eval(stack.ToList());
-            Console.WriteLine($"{problems[i]} = {subtotal}");
-            
             total += subtotal;
         }
 
