@@ -19,4 +19,15 @@ public static class StackExtensions
             yield return stack.Pop();
         }
     }
+
+    public static IEnumerable<T> PopUntil<T>(this Stack<T> stack, Predicate<T> predicate)
+    {
+        T item;
+        
+        do
+        {
+            item = stack.Pop();
+            yield return item;
+        } while (!predicate(item));
+    }
 }

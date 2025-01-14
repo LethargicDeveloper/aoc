@@ -1,0 +1,1 @@
+﻿PuzzleRunner<_2020.Day18.Part01>.Solve();

@@ -1,3 +1,4 @@
+using MoreLinq;
 using QuikGraph;
 
 namespace _2024.Day23;
@@ -12,39 +13,61 @@ public class Part02 : PuzzleSolver<string>
             .Select(s => new Edge<string>(s[0], s[1]))
             .ToUndirectedGraph<string, Edge<string>>();
 
-        var states = new Stack<(string, List<string>, List<List<string>>)>();
-        foreach (var vertex in graph.Vertices)
-            states.Push((vertex, [vertex], [graph
-                .AdjacentEdges(vertex)
-                .Select(e => e.Target == vertex ? e.Source : e.Target)
-                .ToList()]));
+        List<string> GetNeighbors(string v) =>
+            graph.AdjacentEdges(v).Select(e => e.Target == v ? e.Source : e.Target).ToList();
 
-        var paths = new List<List<string>>();
-        while (states.TryPop(out var state))
-        {
-            var (vertex, path, adj) = state;
-
-            var neighbors = adj[^1]
-                .Where(n => !path.Contains(n))
-                .Where(n => adj.All(a => a.Contains(n)))
-                .ToList();
-
-            if (neighbors.Count == 0)
+        var path = graph
+            .Vertices
+            .Select(v =>
             {
-                paths.Add(path);
-            }
-            
-            foreach (var neighbor in neighbors)
-            {
-                states.Push((neighbor, [..path, neighbor], [..adj, graph
-                    .AdjacentEdges(neighbor)
-                    .Select(e => e.Target == vertex ? e.Source : e.Target)
-                    .ToList()]));
-            }
-        }
-       
-        var longest = paths.MaxBy(p => p.Count);
-        
-        return string.Join(",", longest!.OrderBy());
+                var n = GetNeighbors(v);
+                var validN = n
+                    .Where(x =>
+                    {
+                        var xn = GetNeighbors(x);
+                        var valid = !n.Except(xn).Any();
+                        return valid;
+                    })
+                    .OrderBy();
+                return string.Join(",", validN);
+            })
+            .ToList();
+            //.MaxBy(v => v.Length);
+
+        return "";
+
+        // var states = new Stack<(string, List<string>)>();
+        // foreach (var vertex in graph.Vertices)
+        //     states.Push((vertex, [vertex]));
+        //
+        // var bestPath = new List<string>();
+        // while (states.TryPop(out var state))
+        // {
+        //     var (vertex, path) = state;
+        //
+        //     var neighbors = GetNeighbors(vertex)
+        //         .Where(n => !path.Contains(n))
+        //         .Where(n => !path.Except(GetNeighbors(n)).Any())
+        //         .ToList();
+        //
+        //     path = [..path, ..neighbors];
+        //
+        //     // if (path.Count + neighbors.Count + 1 < bestPath.Count)
+        //     //     continue;
+        //
+        //     if (path.Count > bestPath.Count)
+        //     {
+        //         bestPath = path;
+        //     }
+        //
+        //     continue;
+        //     
+        //     foreach (var neighbor in neighbors)
+        //     {
+        //         states.Push((neighbor, [..path, neighbor]));
+        //     }
+        //}
+
+        //return string.Join(",", bestPath.OrderBy());
     }
 }

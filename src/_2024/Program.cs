@@ -1,2 +1,1 @@
-PuzzleRunner<_2024.Day23.Part02>.Solve("sample");
-PuzzleRunner<_2024.Day23.Part02>.Solve();
+PuzzleRunner<_2024.Day18.Part01>.Solve("sample");
