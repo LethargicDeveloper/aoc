@@ -20,7 +20,7 @@ public class Part02 : PuzzleSolver<long>
 
         return new AocRange<long>(start, end)
             .Select(x => x.ToString())
-            .Where(id => $"{id}"[0] == '0' || HasRepeatingPattern(id))
+            .Where(id => id[0] == '0' || HasRepeatingPattern(id))
             .Select(long.Parse);
     }
 
