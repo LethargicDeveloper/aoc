@@ -54,6 +54,12 @@ public readonly record struct Point<T>(T X, T Y) : ISpanParsable<Point<T>>
             yield return this + dir;
     }
 
+    public IEnumerable<Point<T>> Neighbors(List<Point<T>> directions)
+    {
+        foreach (var dir in directions) 
+            yield return this + dir;
+    }
+
     public IEnumerable<Point<T>> Neighbors()
     {
         foreach (var dir in Directions)

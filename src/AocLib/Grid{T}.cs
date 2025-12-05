@@ -1,11 +1,21 @@
+using System.Collections;
+
 namespace AocLib;
 
-public class Grid<T>
+public class Grid<T> : IEnumerable<(Point Index, T Value)>
     where T : IEquatable<T>
 {
-    private List<List<T>> grid = [[]];
+    private List<List<T>> grid = [];
     
     private Grid() {}
+
+    public Grid(int width, int height)
+    {
+        for (int y = 0; y < height; y++)
+        {
+            grid.Add([..new T[width]]);
+        }
+    }
     
     public T this[int x, int y]
     {
@@ -56,6 +66,15 @@ public class Grid<T>
         
         return new() { grid = list };
     }
+
+    public IEnumerator<(Point Index, T Value)> GetEnumerator()
+    {
+        for (int y = 0; y < Height; y++)
+            for (int x = 0; x < Width; x++)
+                yield return ((x, y), this[x, y]);
+    }
+
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }
 
 public static class GridExtensions
