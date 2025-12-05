@@ -1,1 +1,1 @@
-PuzzleRunner<_2025.Day04.Part02>.Solve();
+PuzzleRunner<_2025.Day05.Part02>.Solve();

@@ -50,14 +50,14 @@ public static class MathEx
         return r < T.Zero ? r + mod : r;
     }
     
-    // public static T Max<T>(params T[] values)
-    //     where T : struct, INumber<T>
-    //     => (values ?? []).Aggregate((acc, cur) => acc > cur ? acc : cur);
-    //
-    // public static T Min<T>(params T[] values)
-    //     where T : struct, INumber<T>
-    //     => (values ?? []).Aggregate((acc, cur) => acc < cur ? acc : cur);
-    //
+    public static T Max<T>(params T[] values)
+        where T : INumber<T>
+        => (values ?? []).Aggregate((acc, cur) => acc > cur ? acc : cur);
+    
+    public static T Min<T>(params T[] values)
+        where T : INumber<T>
+        => (values ?? []).Aggregate((acc, cur) => acc < cur ? acc : cur);
+    
     // public static (long, long, long) ExtendedGCF(long a, long b)
     // {
     //     if (a == 0) return (b, 0, 1);
