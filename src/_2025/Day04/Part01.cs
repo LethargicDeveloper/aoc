@@ -6,7 +6,7 @@ public class Part01 : PuzzleSolver<long>
 {
     protected override long InternalSolve()
     {
-        var grid = input.ToGrid<char>();
+        var grid = input.ToGrid();
         var forklift = new Grid<int>(grid.Width, grid.Height);
 
         for (int y = 0; y < grid.Height; y++)

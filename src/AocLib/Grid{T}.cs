@@ -79,15 +79,9 @@ public class Grid<T> : IEnumerable<(Point Index, T Value)>
 
 public static class GridExtensions
 {
-    public static Grid<T> ToGrid<T>(this string input)
-        where T : IEquatable<T> => ToGrid<T>(input.SplitLines());
-    
-    public static Grid<T> ToGrid<T>(this IEnumerable<string> input)
-        where T : IEquatable<T> => typeof(T) switch
-        {
-            var t when t == typeof(char) => Grid<char>.Create(input, str => str.ToCharArray()) as Grid<T>
-                ?? throw new Exception("Unable to convert string to Grid<char>"),
+    public static Grid<char> ToGrid(this string input)
+        => ToGrid(input.SplitLines());
 
-            _ => throw new ArgumentException($"Invalid type {typeof(T)}", nameof(input)),
-        };
+    public static Grid<char> ToGrid(this IEnumerable<string> input)
+        => Grid<char>.Create(input, str => str.ToCharArray());
 }

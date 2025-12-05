@@ -6,7 +6,7 @@ public class Part01 : PuzzleSolver<long>
 {
     protected override long InternalSolve()
     {
-        var grid = input.ToGrid<char>();
+        var grid = input.ToGrid();
         var start = grid.Find('S');
         var end = grid.Find('E');
         

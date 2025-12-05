@@ -10,12 +10,12 @@ public class Part02 : PuzzleSolver<long>
                         456
                         123
                          0A
-                        """.ToGrid<char>();
+                        """.ToGrid();
 
     Grid<char> dirpad = """
                          ^A
                         <v>
-                        """.ToGrid<char>();
+                        """.ToGrid();
     
     protected override long InternalSolve()
     {

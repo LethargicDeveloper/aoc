@@ -14,12 +14,12 @@ public class Part01 : PuzzleSolver<long>
                      456
                      123
                       0A
-                     """.ToGrid<char>();
+                     """.ToGrid();
 
         var dirpad = """
                       ^A
                      <v>
-                     """.ToGrid<char>();
+                     """.ToGrid();
 
         var numpadStart = numpad.Find('A');
         var dirpadStart = dirpad.Find('A');

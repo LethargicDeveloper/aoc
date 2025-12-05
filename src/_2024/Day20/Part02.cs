@@ -6,7 +6,7 @@ public class Part02 : PuzzleSolver<long>
     {
         const int CHEAT_TIME = 100;
         
-        var grid = input.ToGrid<char>();
+        var grid = input.ToGrid();
         var start = grid.Find('S');
         var end = grid.Find('E');
         

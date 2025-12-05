@@ -8,7 +8,7 @@ public class Part01 : PuzzleSolver<long>
     {
         var data = input.SplitEmptyLines();
         
-        var grid = data[0].ToGrid<char>();
+        var grid = data[0].ToGrid();
         var cmds = data[1]
             .SplitLines()
             .SelectMany()

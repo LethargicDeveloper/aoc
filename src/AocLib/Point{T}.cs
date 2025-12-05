@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
-using System.Text.RegularExpressions;
 using MoreLinq;
 
 namespace AocLib;
