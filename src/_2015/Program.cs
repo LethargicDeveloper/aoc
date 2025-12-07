@@ -1,0 +1,1 @@
+﻿PuzzleRunner<_2015.Day07.Part01>.Solve();
