@@ -51,12 +51,40 @@ public static class MathEx
     }
     
     public static T Max<T>(params T[] values)
-        where T : INumber<T>
-        => (values ?? []).Aggregate((acc, cur) => acc > cur ? acc : cur);
+        where T : INumber<T> => (values ?? []).Aggregate((acc, cur) => acc > cur ? acc : cur);
     
     public static T Min<T>(params T[] values)
+        where T : INumber<T> => (values ?? []).Aggregate((acc, cur) => acc < cur ? acc : cur);
+
+    public static List<List<T>> PascalsTriangle<T>(int level)
         where T : INumber<T>
-        => (values ?? []).Aggregate((acc, cur) => acc < cur ? acc : cur);
+    {
+        var triangle = new List<List<T>>();
+        
+        for (int n = 1; n <= level; n++)
+        {
+            triangle.Add([]);
+            
+            for (int k = 1; k <= level; k++)
+            {
+                var pos = Factorial(T.CreateChecked(n)) / (Factorial(T.CreateChecked(k)) * Factorial(T.CreateChecked(n - k)));
+                triangle[n].Add(pos);
+            }
+        }
+
+        return triangle;
+    }
+    
+    public static T Factorial<T>(T num)
+        where T : INumber<T>
+    {
+        if (num < T.One) return T.One;
+    
+        if (num == T.MultiplicativeIdentity)
+            return T.MultiplicativeIdentity;
+    
+        return num * Factorial(num - T.One);
+    }
     
     // public static (long, long, long) ExtendedGCF(long a, long b)
     // {
@@ -65,16 +93,7 @@ public static class MathEx
     //     return (gcd, y - (b / a) * x, x);
     // }
     //
-    // public static T Factorial<T>(T num)
-    //     where T : struct, INumber<T>
-    // {
-    //     if (num < T.One) return T.One;
-    //
-    //     if (num == T.MultiplicativeIdentity)
-    //         return T.MultiplicativeIdentity;
-    //
-    //     return num * Factorial(num - T.One);
-    // }
+
     //
     // public static T Combinations<T>(T num1, T num2)
     //     where T : struct, INumber<T>

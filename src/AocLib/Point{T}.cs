@@ -5,12 +5,14 @@ using MoreLinq;
 
 namespace AocLib;
 
-public readonly record struct Point<T>(T X, T Y) : ISpanParsable<Point<T>>
+public readonly record struct Point<T>(T X, T Y, T Z) : ISpanParsable<Point<T>>
     where T : INumber<T>
 {
-    public Point() : this(T.Zero, T.Zero) {}
+    public Point() : this(T.Zero, T.Zero, T.Zero) {}
+    public Point(T x, T y) : this(T.Zero, T.Zero, T.Zero) {}
     
     public void Deconstruct(out T x, out T y) { x = X;  y = Y; }
+    public void Deconstruct(out T x, out T y, out T z) { x = X;  y = Y; z = Z; }
 
     public Point<T> MoveUp() => this + Up;
     public Point<T> MoveRight() => this + Right;
@@ -33,7 +35,35 @@ public readonly record struct Point<T>(T X, T Y) : ISpanParsable<Point<T>>
     }
 
     public T ManhattanDistance(Point<T> dest) =>
-        T.Abs(X - dest.X) + T.Abs(Y - dest.Y);
+        T.Abs(X - dest.X) + T.Abs(Y - dest.Y) + T.Abs(Z - dest.Z);
+
+    public TD Distance<TD>(Point<TD> dest)
+        where TD : INumber<TD>, IRootFunctions<TD>
+    {
+        var dx = dest.X - TD.CreateChecked(X);
+        var dy = dest.Y - TD.CreateChecked(Y);
+        var dz = dest.Z - TD.CreateChecked(Z);
+
+        return TD.Sqrt((dx * dx) + (dy * dy) + (dz * dz));
+    }
+
+    public double Distance(Point<int> dest)
+    {
+        var dx = dest.X - int.CreateChecked(X);
+        var dy = dest.Y - int.CreateChecked(Y);
+        var dz = dest.Z - int.CreateChecked(Z);
+
+        return Math.Sqrt((dx * dx) + (dy * dy) + (dz * dz));
+    }
+    
+    public double Distance(Point<long> dest)
+    {
+        var dx = dest.X - int.CreateChecked(X);
+        var dy = dest.Y - int.CreateChecked(Y);
+        var dz = dest.Z - int.CreateChecked(Z);
+
+        return Math.Sqrt((dx * dx) + (dy * dy) + (dz * dz));
+    }
 
     public bool InBounds(T min, T max) =>
         InBounds(min, min, max, max);
@@ -74,7 +104,7 @@ public readonly record struct Point<T>(T X, T Y) : ISpanParsable<Point<T>>
     public bool IsNeighborOf(Point<T> point) =>
         Neighbors().Contains(point);
 
-    public override string ToString() => $"({X}, {Y})";
+    public override string ToString() => $"({X}, {Y}, {Z})";
 
     public static Point<T> operator +(Point<T> point1, Point<T> point2) =>
         new(point1.X + point2.X, point1.Y + point2.Y);
@@ -97,8 +127,14 @@ public readonly record struct Point<T>(T X, T Y) : ISpanParsable<Point<T>>
     public static implicit operator Point<T>((T, T) point) =>
         new(point.Item1, point.Item2);
     
+    public static implicit operator Point<T>((T, T, T) point) =>
+        new(point.Item1, point.Item2, point.Item3);
+    
     public static implicit operator (T, T)(Point<T> point) =>
         (point.X, point.Y);
+    
+    public static implicit operator (T, T, T)(Point<T> point) =>
+        new(point.X, point.Y, point.Z);
 
     public static Point<T> TurnRight(Point<T> facing) =>
         InternalTurn(facing, Directions, Right);
@@ -154,6 +190,8 @@ public readonly record struct Point<T>(T X, T Y) : ISpanParsable<Point<T>>
     public static Point<T>[] Directions { get; } =
         [UpLeft, Up, UpRight, Right, DownRight, Down, DownLeft, Left];
 
+    public static Point<T> Parse(string s) => Parse(s, null);
+    
     public static Point<T> Parse(string s, IFormatProvider? provider)
     {
         if (TryParse(s, provider, out var point))
@@ -167,10 +205,13 @@ public readonly record struct Point<T>(T X, T Y) : ISpanParsable<Point<T>>
         result = default;
         
         var numbers = s?.ParseNumbers<T>()[0] ?? [];
-        if (numbers.Count != 2)
+        if (numbers.Count is not (2 or 3))
             return false;
 
-        result = new(numbers[0], numbers[1]);
+        result = numbers.Count == 2
+            ? new(numbers[0], numbers[1])
+            : new(numbers[0], numbers[1], numbers[2]);
+
         return true;
     }
 
