@@ -9,7 +9,7 @@ public readonly record struct Point<T>(T X, T Y, T Z) : ISpanParsable<Point<T>>
     where T : INumber<T>
 {
     public Point() : this(T.Zero, T.Zero, T.Zero) {}
-    public Point(T x, T y) : this(T.Zero, T.Zero, T.Zero) {}
+    public Point(T x, T y) : this(x, y, T.Zero) {}
     
     public void Deconstruct(out T x, out T y) { x = X;  y = Y; }
     public void Deconstruct(out T x, out T y, out T z) { x = X;  y = Y; z = Z; }
@@ -205,8 +205,6 @@ public readonly record struct Point<T>(T X, T Y, T Z) : ISpanParsable<Point<T>>
         result = default;
         
         var numbers = s?.ParseNumbers<T>()[0] ?? [];
-        if (numbers.Count is not (2 or 3))
-            return false;
 
         result = numbers.Count == 2
             ? new(numbers[0], numbers[1])
