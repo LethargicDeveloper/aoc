@@ -3,7 +3,6 @@ using QuikGraph.Algorithms;
 
 namespace _2025.Day09;
 
-[Answer(1439894345)]
 public class Part02 : PuzzleSolver<long>
 {
     protected override long InternalSolve()
@@ -13,32 +12,28 @@ public class Part02 : PuzzleSolver<long>
             .Select(Point<long>.Parse)
             .ToList();
 
-        var polygon = (
-            from p1 in points
-            from p2 in points
-            where p1 != p2 && (p1.X == p2.X || p1.Y == p2.Y)
-            select new Line<long>(p1, p2)
-        ).DistinctBy(p =>
-            string.CompareOrdinal(p.Point1.ToString(), p.Point2.ToString()) < 1
-                ? (p.Point1, p.Point2)
-                : (p.Point2, p.Point1))
-        .ToList();
-
-        var rects = (
+        var pairs = (
             from p1 in points
             from p2 in points
             where p1 != p2
             select (Point1: p1, Point2: p2)
-        ).DistinctBy(p => string.CompareOrdinal(p.Point1.ToString(), p.Point2.ToString()) < 1 
-                ? (p.Point1, p.Point2)
-                : (p.Point2, p.Point1))
-        .Select(p => new Rect<long>(p.Point1, p.Point2));
+        ).DistinctBy(p => Distinct(p.Point1, p.Point2))
+        .ToList();
 
-        var validRects = rects
-            .Where(rect => !polygon.Any(line => Overlap(rect, line)));
+        var polygon = pairs
+            .Where(p => p.Point1.X == p.Point2.X || p.Point1.Y == p.Point2.Y)
+            .Select(p => new Line<long>(p.Point1, p.Point2))
+            .ToList();
+
+        return pairs
+            .Select(p => new Rect<long>(p.Point1, p.Point2))
+            .OrderByDescending(r => r.Area)
+            .First(rect => !polygon.Any(line => Overlap(rect, line)))
+            .Area;
+
+        (Point<long>, Point<long>) Distinct(Point<long> p1, Point<long> p2)
+            => string.CompareOrdinal(p1.ToString(), p2.ToString()) < 1 ? (p1, p2) : (p2, p1);
         
-        return validRects.Max(r => r.Area);
-
         bool Overlap(Rect<long> rect, Line<long> line)
             => rect.Top < MathEx.Max(line.Point1.Y, line.Point2.Y) &&
                rect.Bottom > MathEx.Min(line.Point1.Y, line.Point2.Y) &&
