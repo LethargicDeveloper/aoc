@@ -32,7 +32,7 @@ public class Part02 : PuzzleSolver<long>
             .Area;
 
         (Point<long>, Point<long>) Distinct(Point<long> p1, Point<long> p2)
-            => string.CompareOrdinal(p1.ToString(), p2.ToString()) < 1 ? (p1, p2) : (p2, p1);
+            =>  p1.GetHashCode() < p2.GetHashCode() ? (p1, p2) : (p2, p1);
         
         bool Overlap(Rect<long> rect, Line<long> line)
             => rect.Top < MathEx.Max(line.Point1.Y, line.Point2.Y) &&

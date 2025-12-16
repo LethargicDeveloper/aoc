@@ -8,8 +8,8 @@ namespace AocLib;
 public class GridVisualizer<T>(Grid<T> grid)
     where T : IEquatable<T>
 {
-    private readonly List<(Predicate<Point>, T)> overlayPredicates = [];
-    private readonly List<(Func<Point, T, bool>, string)> stylePredicates = [];
+    private readonly List<(Predicate<Point>, string)> overlayPredicates = [];
+    private readonly List<(Func<Point, string, bool>, string)> stylePredicates = [];
     private string? data;
 
     public GridVisualizer<T> WithData<TData>(TData data)
@@ -22,21 +22,21 @@ public class GridVisualizer<T>(Grid<T> grid)
         return this;
     }
     
-    public GridVisualizer<T> WithOverlay(Predicate<Point> predicate, T value)
+    public GridVisualizer<T> WithOverlay(Predicate<Point> predicate, string value)
     {
         overlayPredicates.Add((predicate, value));
         return this;
     }
     
-    public GridVisualizer<T> WithStyle(Func<Point, T, bool> predicate, string markup)
+    public GridVisualizer<T> WithStyle(Func<Point, string, bool> predicate, string markup)
     {
         stylePredicates.Add((predicate, markup));
         return this;
     }
 
-    public void Display(bool wait = false)
+    public void Display(bool wait = false, bool clear = true)
     {
-        if (wait) Console.Clear();
+        if (clear) Console.Clear();
         
         var sb = new StringBuilder();
         
@@ -44,7 +44,7 @@ public class GridVisualizer<T>(Grid<T> grid)
         {
             for (int x = 0; x < grid.Width; x++)
             {
-                var value = grid[x, y];
+                string value = grid[x, y]?.ToString() ?? "";
                 foreach (var (predicate, overlay) in overlayPredicates)
                 {
                     value = predicate((x, y)) ? overlay : value;

@@ -14,6 +14,25 @@ public static class EnumerableExtensions
     
     public static T[][] ToArrays<T>(this IEnumerable<IEnumerable<T>> lists) =>
         lists.Select(l => l.ToArray()).ToArray();
+
+    public static T[,] To2dArray<T>(this IEnumerable<IEnumerable<T>> lists)
+    {
+        var arr = lists.ToArrays();
+        
+        var height = arr.Length;
+        var width = arr.Max(a => a.Length);
+
+        var newArr = new T[height, width];
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                newArr[y, x] = arr[y].ElementAtOrDefault(x)!;
+            }
+        }
+
+        return newArr;
+    }
     
     public static long ComputeHash<T>(this IEnumerable<T> arr)
     {

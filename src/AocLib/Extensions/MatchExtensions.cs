@@ -14,8 +14,8 @@ public static class MatchExtensions
         public string Get(int groupIndex) =>
             match.Groups[groupIndex].Value;
         
-        public string[] GetMatches() =>
-            match.Groups.Values.Skip(1).Select(g => g.Value).ToArray();
+        public List<string> GetMatches() =>
+            match.Groups.Values.Skip(1).Select(g => g.Value).ToList();
 
         public List<T> ParseNumbers<T>()
             where T : struct, INumber<T>
@@ -28,6 +28,12 @@ public static class MatchExtensions
                 .Select(v => v.Value)
                 .ToList();
         }
+    }
+
+    extension(MatchCollection matches)
+    {
+        public List<string> GetMatches() =>
+            matches.Skip(1).Select(g => g.Value).ToList();
     }
     
     extension(Match match)

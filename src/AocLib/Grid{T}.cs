@@ -9,6 +9,13 @@ public class Grid<T> : IEnumerable<(Point Index, T Value)>
     
     private Grid() {}
 
+    private Grid(Grid<T> g)
+    {
+        grid = g.grid
+            .Select(r => r.ToList())
+            .ToList();
+    }
+
     public Grid(int width, int height)
     {
         for (int y = 0; y < height; y++)
@@ -53,6 +60,42 @@ public class Grid<T> : IEnumerable<(Point Index, T Value)>
     
     public bool InBounds(Point point) =>
         point.InBounds(0, 0, Width - 1, Height - 1);
+
+    public Grid<T> RotateCounterClockwise()
+    {
+        var g = new Grid<T>(Width, Height);
+        
+        foreach (var (index, value) in this)
+        {
+            var (x, y) = index;
+            g[y, Width - x - 1] = value;
+        }
+
+        return g;
+    }
+    
+    public Grid<T> RotateClockwise()
+    {
+        var g = new Grid<T>(Width, Height);
+        
+        foreach (var (index, value) in this)
+        {
+            var (x, y) = index;
+            g[Width - y - 1, x] = value;
+        }
+
+        return g;
+    }
+
+    public Grid<T> Reverse()
+    {
+        var g = new Grid<T>(Width, Height)
+        {
+            grid = grid.Select(r => r.AsEnumerable().Reverse().ToList()).ToList()
+        };
+
+        return g;
+    }
 
     public static Grid<T> Create(string input, Func<string, T[]> parser) =>
         Create(input.SplitLines(), parser);
